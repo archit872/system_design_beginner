@@ -62,12 +62,6 @@
         </div>
       </div>
     </section>
-
-    <figure>
-      <img src="assets/client-server-seq.svg" alt="Sequence diagram: Client → DNS → CDN → Load Balancer → API → Service → Cache/DB → back to Client" />
-      <figcaption>Request lifecycle: a browser (client) resolves DNS, fetches static assets via CDN, and sends API calls through a load balancer to a stateless service that reads from a cache and database.</figcaption>
-    </figure>
-
     <section class="section" aria-labelledby="model">
       <h2 id="model">2.1 Client–Server Model Explained</h2>
       <p>The client–server model divides responsibility: the <strong>client</strong> initiates a request and renders results; the <strong>server</strong> performs work and returns a response. This separation enables scaling and specialization: clients optimize for user experience, servers optimize for correctness and throughput. A single logical “server” is usually a <em>cluster</em> of replicas behind a <abbr title="Component that distributes traffic across replicas">load balancer</abbr>.</p>
@@ -105,10 +99,6 @@
       <h2 id="apis">2.3 APIs: REST vs. RPC Overview</h2>
       <p><strong>REST</strong> models resources (nouns) with standard verbs (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>). It’s web-native, cache-friendly, and human-readable (JSON). Versioning often uses URLs (<code>/v1/</code>) or headers. REST shines for public APIs, CRUD, and when HTTP caching matters.</p>
       <p><strong>RPC</strong> (Remote Procedure Call) models operations (verbs) like <code>CreateUser</code> or <code>SendMessage</code>, often using an Interface Definition Language (IDL) and code generation. <strong>gRPC</strong>—a popular RPC framework—uses HTTP/2 multiplexing and Protobuf for compact, strongly typed messages. RPC shines for internal service-to-service calls that value schema contracts and performance.</p>
-      <figure>
-        <img src="assets/protocols-spectrum.svg" alt="Spectrum diagram positioning REST (resource-oriented), WebSockets (bidirectional), and gRPC (operation-oriented, typed) across use cases" />
-        <figcaption>Choosing a style: REST favors resource modeling and caching; WebSockets favor real-time bidirectionality; gRPC favors binary efficiency and typed contracts.</figcaption>
-      </figure>
       <div class="callout info"><strong>Rule of thumb:</strong> Prefer REST for external/public APIs; prefer RPC/gRPC for high-throughput internal service calls; prefer WebSockets for push-heavy, real-time features (chat, presence, live counters).</div>
       <div class="callout warn"><strong>Trade-off:</strong> gRPC brings performance and strong typing but adds complexity for browsers (gRPC-Web, proxies). REST is simpler and universally supported but may be verbose and slower under heavy internal traffic.</div>
     </section>
@@ -160,10 +150,6 @@
       </ol>
 
       <div class="grid two">
-        <figure>
-          <img src="assets/chat-sequence.svg" alt="Sequence diagram comparing long-polling flow vs. WebSocket flow for a chat room" />
-          <figcaption>Two roads to “chat”: long polling is simpler and CDN-friendly; WebSockets provide lower latency and push.</figcaption>
-        </figure>
         <div class="card">
           <h3 class="mt-0">Trade-off Spotlight</h3>
           <p><strong>Long polling</strong> is simpler, uses standard HTTP infrastructure, and plays well with CDNs, but incurs request overhead. <strong>WebSockets</strong> cut latency and bandwidth for active rooms but require connection-oriented scaling and careful resource limits.</p>
@@ -289,7 +275,6 @@
   - [x] Pager prev=ch01, next=ch03
   - [x] Sections meet depth: objectives; 2.1–2.5; examples; compare/contrast; analogy
   - [x] Practice (4 tasks) with success criteria; Mastery (6 Qs) with sample answers
-  - [x] ≥2 figures: client-server-seq.svg, protocols-spectrum.svg, chat-sequence.svg under /assets
   - [x] ≥8 glossary-style terms via <abbr> or glossary link
   - [x] Recap + Next steps
   - [x] All <img> paths point to ../assets/*

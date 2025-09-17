@@ -61,12 +61,6 @@
         </div>
       </div>
     </section>
-
-    <figure>
-      <img src="assets/sql-nosql-spectrum.svg" alt="Spectrum showing SQL (strong schema, ACID) ←→ NoSQL (flexible schema, scale-out). Example engines placed along the line." />
-      <figcaption>Two ends of a spectrum: relational databases optimize for integrity and complex joins; NoSQL families optimize for specific access patterns and horizontal scale.</figcaption>
-    </figure>
-
     <section class="section" aria-labelledby="why-db">
       <h2 id="why-db">3.1 Why We Need Databases</h2>
       <p>Databases provide durable storage, <strong>concurrency control</strong>, and efficient query execution. A naive file-based approach breaks down when multiple clients read and write concurrently, when you need random access by key, or when you must recover after a crash.</p>
@@ -109,10 +103,6 @@
       <h2 id="nosql">3.3 NoSQL Basics: Key-Value, Document, Wide-Column</h2>
       <p><strong>Key-Value</strong> stores map keys to opaque values, offering O(1)-ish access and massive scale. They excel at session stores, feature flags, and caching. <strong>Document</strong> stores keep JSON-like structures; they’re great when records are naturally hierarchical and when read paths align with document boundaries. <strong>Wide-column</strong> (column-family) stores arrange data by partition/cluster keys and scale linearly for time-series and large sparse datasets.</p>
       <div class="grid two">
-        <figure>
-          <img src="assets/nosql-families.svg" alt="Diagram of three NoSQL families: key-value, document, wide-column, with typical use cases" />
-          <figcaption>Different shapes, different strengths: choose the model that matches your dominant access pattern.</figcaption>
-        </figure>
         <div class="card">
           <h3 class="mt-0">Modeling Tips</h3>
           <ul>
@@ -150,10 +140,6 @@
     <section class="section" aria-labelledby="replication">
       <h2 id="replication">3.4 Data Replication &amp; Consistency Trade-offs</h2>
       <p><strong>Replication</strong> improves <abbr title="Proportion of time a service is up">availability</abbr>, <abbr title="Probability of not losing data">durability</abbr>, and read <abbr title="Units of work per second">throughput</abbr> by having multiple copies. In <strong>leader-follower</strong> setups, writes go to a leader and are streamed to followers (async) or acknowledged after followers persist (sync). In <strong>leaderless</strong> setups, clients write to and read from multiple replicas with quorum rules.</p>
-      <figure>
-        <img src="assets/replication-modes.svg" alt="Diagram contrasting leader–follower replication with leaderless quorum replication" />
-        <figcaption>Leader–follower suits transactional workloads and simpler semantics; leaderless with quorums suits high availability with tunable consistency.</figcaption>
-      </figure>
       <div class="grid two">
         <div class="card">
           <h3 class="mt-0">Consistency Spectrum</h3>
@@ -303,7 +289,6 @@
   - [x] Sections meet depth: 3.1–3.4 + examples, compare/contrast, analogy
   - [x] Practice (3–4 tasks) with time + success criteria
   - [x] Mastery (6–7 Qs) with sample answers
-  - [x] ≥2 figures under /assets: sql-nosql-spectrum.svg, nosql-families.svg, replication-modes.svg
   - [x] ≥8 glossary-style terms via <abbr> (ACID, SQL, NoSQL, index, replication, consistency, availability, durability, serializable)
   - [x] Recap + Next steps
   -->

@@ -61,12 +61,6 @@
         </div>
       </div>
     </section>
-
-    <figure>
-      <img src="assets/cache-hierarchy.svg" alt="Diagram of cache hierarchy: Browser → CDN → Edge Compute → API → App Cache → Database" />
-      <figcaption>Where caches live: the closer to the client, the lower the latency and the broader the reuse. Server-side caches protect your database from hot read traffic.</figcaption>
-    </figure>
-
     <section class="section" aria-labelledby="intro">
       <h2 id="intro">4.1 Introduction to Caching</h2>
       <p>A <strong>cache</strong> stores the result of expensive operations so future requests can be answered faster. We trade <em>freshness</em> for <em>speed</em> under explicit rules. Good caches are predictable: you should be able to answer “when does this change propagate?”</p>
@@ -90,10 +84,6 @@
             <li><code>Vary</code> — separate caches by header (e.g., <code>Accept-Encoding</code>, <code>Authorization</code>).</li>
           </ul>
         </div>
-        <figure>
-          <img src="assets/cdn-flow.svg" alt="Flow of client request through DNS → CDN edge cache → origin; on hit: edge serves; on miss: fetch from origin and store" />
-          <figcaption>CDN request flow: misses travel to origin once, then future requests are served from the edge until TTL expiry or purge.</figcaption>
-        </figure>
       </div>
       <p><strong>Immutable file strategy:</strong> Fingerprint assets (e.g., <code>main.abcd1234.css</code>) and serve with <code>Cache-Control: public, max-age=31536000, immutable</code>. Deploys upload new files; HTML references change the filenames. This gives you long-lived caching without manual purges.</p>
       <p><strong>Personalized pages:</strong> Avoid caching entire responses at the CDN when they vary per user. Instead, cache static parts and fetch personalized JSON separately, or use <abbr title="Edge execution like CDN workers to compose cached and dynamic data">edge compute</abbr>.</p>
@@ -108,10 +98,6 @@
         <li><strong>Write-back (write-behind):</strong> Writes go to cache and are flushed to DB asynchronously—low latency but risk data loss on crash.</li>
       </ul>
       <div class="grid two">
-        <figure>
-          <img src="assets/redis-topology.svg" alt="Redis topology: app servers connect to a Redis cluster with replication and optional sharding" />
-          <figcaption>Shared cache with replication; sharding distributes keys by hash. Monitor memory, eviction policy, and connection limits.</figcaption>
-        </figure>
         <div class="card">
           <h3 class="mt-0">Choosing Keys &amp; TTLs</h3>
           <ul>
@@ -133,12 +119,6 @@
     <section class="section" aria-labelledby="invalidation">
       <h2 id="invalidation">4.4 Cache Invalidation Patterns</h2>
       <p>Invalidation answers: <em>When should the cache stop serving a value?</em> Strategies vary by data volatility and correctness needs.</p>
-
-      <figure>
-        <img src="assets/cache-invalidation-patterns.svg" alt="Matrix of cache invalidation patterns: TTL, explicit purge, event-driven bust, versioned keys; annotated by freshness vs. complexity" />
-        <figcaption>Pick the simplest pattern that meets freshness requirements; combine TTL with explicit busting for critical paths.</figcaption>
-      </figure>
-
       <h3 id="ttl">TTL (Time To Live)</h3>
       <p>Let entries expire naturally after N seconds. Best for data that can be slightly stale (leaderboards, trending lists). Add jitter to avoid herd effects.</p>
 
@@ -303,7 +283,6 @@
   - [x] Sections meet depth: 4.1–4.4 + examples, compare/contrast, analogy, trade-off
   - [x] Practice (3–4 tasks) with time + success criteria
   - [x] Mastery (5–7 Qs) with sample answers
-  - [x] ≥3 figures: cache-hierarchy.svg, cdn-flow.svg, redis-topology.svg, cache-invalidation-patterns.svg under /assets
   - [x] ≥8 glossary-style terms via <abbr> (latency, throughput, TTL, freshness, edge compute, cache-aside, write-through, write-back)
   - [x] Recap + Next steps
   -->

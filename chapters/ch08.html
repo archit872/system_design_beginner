@@ -42,12 +42,6 @@
   <main id="main" class="container section">
     <section class="section" aria-labelledby="pitfalls">
       <h2 id="pitfalls">8.1 Common Pitfalls (and how to avoid them)</h2>
-
-      <figure>
-        <img src="assets/pitfalls-top10.svg" alt="Top 10 system design pitfalls arranged in a circle: over-engineering, ignoring requirements, no numbers, misusing caches, premature microservices, ignoring data model, no fault plan, weak observability, unclear consistency, and hand-wavy capacity" />
-        <figcaption>Top 10 pitfalls for beginners. Treat them as a checklist during interviews and design docs.</figcaption>
-      </figure>
-
       <ol>
         <li><strong>Over-engineering.</strong> Proposing a microservices zoo for a tiny scope. <em>Fix:</em> Start simple (monolith + cache), evolve when metrics demand it.</li>
         <li><strong>Ignoring requirements.</strong> Jumping to tech before clarifying <em>functional</em> and <em>non-functional</em> needs. <em>Fix:</em> Spend 3–5 minutes eliciting constraints (p95 latency, expected <abbr title="Requests per second">RPS</abbr>, data retention).</li>
@@ -69,12 +63,6 @@
 
     <section class="section" aria-labelledby="review">
       <h2 id="review">8.2 Review of Key Vocabulary &amp; Patterns</h2>
-
-      <figure>
-        <img src="assets/review-map.svg" alt="Concept map linking latency↔throughput, availability↔durability, scale up↔scale out, REST↔RPC↔WebSockets, SQL↔NoSQL, caching layers, replication and consistency" />
-        <figcaption>Concept map: connect terms to their sibling concepts and tensions; knowing the pairs helps you reason about trade-offs on the fly.</figcaption>
-      </figure>
-
       <div class="grid two">
         <div>
           <h3 class="mt-0">Vocabulary (plain → formal → pitfall → example)</h3>
@@ -114,12 +102,6 @@
 
     <section class="section" aria-labelledby="transition">
       <h2 id="transition">8.3 Transition Path: Beginner → Intermediate</h2>
-
-      <figure>
-        <img src="assets/roadmap-beginner-to-intermediate.svg" alt="Roadmap with milestones: vocabulary, small designs, load tests → data modeling depth → reliability (SLOs) → distributed patterns → medium-scale projects" />
-        <figcaption>Progression roadmap: stack skills in layers and reinforce with targeted projects and reviews.</figcaption>
-      </figure>
-
       <div class="grid two">
         <div class="card">
           <h3 class="mt-0">Milestones</h3>
@@ -168,11 +150,6 @@
           </ul>
         </div>
       </div>
-
-      <figure>
-        <img src="assets/extension-ideas.svg" alt="Grid of extension ideas: custom domains, abuse detection, presence, backpressure, OLAP analytics" />
-        <figcaption>Pick one extension per week; ship end-to-end with tests, metrics, and a brief design doc.</figcaption>
-      </figure>
     </section>
 
     <section class="section practice" aria-labelledby="practice">
@@ -277,7 +254,6 @@
   - [x] Sections meet depth: pitfalls, review, transition path, extensions
   - [x] Practice (3–4 tasks) with time + success criteria
   - [x] Mastery (6–7 Qs) with sample answers
-  - [x] ≥3 figures: pitfalls-top10.svg, review-map.svg, roadmap-beginner-to-intermediate.svg, extension-ideas.svg under /assets
   - [x] ≥8 glossary-style terms via <abbr> (RPS, TTL, SLI/SLO, idempotency, availability, durability, consistency, backpressure, circuit breaker)
   - [x] Recap + Next steps
   -->

@@ -61,12 +61,6 @@
         </div>
       </div>
     </section>
-
-    <figure>
-      <img src="assets/reliability-layers.svg" alt="Stack diagram showing reliability at layers: DNS, CDN/Edge, Load Balancer, App, Cache, Database, Queue, Storage, with redundancy arrows" />
-      <figcaption>Reliability is layered: redundancy and failover should exist at DNS, edge, compute, caches, data stores, and queues—each with health checks and timeouts.</figcaption>
-    </figure>
-
     <section class="section" aria-labelledby="fail">
       <h2 id="fail">6.1 Why Systems Fail</h2>
       <p>Failures are <strong>normal</strong>: disks die, networks partition, processes crash, and humans misconfigure. Designing for reliability means assuming failure and making it <em>contained</em>, <em>observable</em>, and <em>recoverable</em>. Common failure modes:</p>
@@ -98,12 +92,6 @@
     <section class="section" aria-labelledby="redundancy">
       <h2 id="redundancy">6.2 Replication, Redundancy &amp; Backups</h2>
       <p>Reliability starts with eliminating single points of failure (SPOFs). Provide at least N+1 capacity for critical components and <strong>health-check</strong> everything.</p>
-
-      <figure>
-        <img src="assets/redundancy-patterns.svg" alt="Patterns: active-active, active-passive, and N+1 for app and database tiers, with arrows showing failover" />
-        <figcaption>Active–active maximizes capacity and failover speed; active–passive reduces cost but increases failover time; N+1 ensures spare capacity during maintenance or incidents.</figcaption>
-      </figure>
-
       <h3 id="active-active">Active–Active</h3>
       <p>Multiple replicas serve traffic simultaneously. If one fails, others absorb load. Requires <abbr title="Consistent view of cluster membership and health">distributed coordination</abbr>, and for stateful systems, careful replication to avoid split brain.</p>
 
@@ -122,12 +110,6 @@
     <section class="section" aria-labelledby="dr">
       <h2 id="dr">6.3 Fault-Tolerant Design &amp; Disaster Recovery</h2>
       <p>Fault tolerance combines <em>preventive</em> patterns (timeouts, retries, bulkheads) with <em>restorative</em> strategies (failover and DR).</p>
-
-      <figure>
-        <img src="assets/dr-strategies.svg" alt="Table-like diagram: Backup & Restore, Pilot Light, Warm Standby, Multi-Region Active-Active with RTO/RPO arrows" />
-        <figcaption>DR options: <em>Backup &amp; restore</em> (cheap, slow), <em>Pilot light</em> (core services always on), <em>Warm standby</em> (scaled-down full stack), <em>Active–active</em> (fast, expensive).</figcaption>
-      </figure>
-
       <div class="grid two">
         <div class="card">
           <h3 class="mt-0">Fault-Tolerant Patterns</h3>
@@ -153,12 +135,6 @@
     <section class="section" aria-labelledby="observability">
       <h2 id="observability">6.4 Monitoring, Logging &amp; Alerts Basics</h2>
       <p><strong>Observability</strong> is your ability to explain system state from external outputs. It rests on three pillars: <strong>metrics</strong> (numeric time series), <strong>logs</strong> (structured records), and <strong>traces</strong> (request timelines). Define <abbr title="Quantitative measures of service health, e.g., latency, error rate">SLIs</abbr> and set <abbr title="Target values for SLIs, e.g., p95 &lt; 300 ms, 99.9% availability">SLOs</abbr> with <em>error budgets</em> that inform release pace.</p>
-
-      <figure>
-        <img src="assets/observability-stack.svg" alt="Diagram: exporters → metrics DB (time series), log store, trace collector → dashboards and alerts" />
-        <figcaption>Observability stack: instrumentation exports signals; storage backends retain them; dashboards and alerts turn signals into action.</figcaption>
-      </figure>
-
       <div class="grid two">
         <div class="card">
           <h3 class="mt-0">Minimum Dashboard</h3>
@@ -307,7 +283,6 @@
   - [x] Sections meet depth: 6.1–6.4 + examples, compare/contrast, analogy, trade-offs
   - [x] Practice (3–4 tasks) with time + success criteria
   - [x] Mastery (6–7 Qs) with sample answers
-  - [x] ≥4 figures: reliability-layers.svg, redundancy-patterns.svg, dr-strategies.svg, observability-stack.svg under /assets
   - [x] ≥8 glossary-style terms via <abbr> (availability, durability, MTTR, RTO, RPO, circuit breaker, bulkhead, SLI/SLO, error budget)
   - [x] Recap + Next steps
   -->

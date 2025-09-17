@@ -62,12 +62,6 @@
         </div>
       </div>
     </section>
-
-    <figure>
-      <img src="assets/design-flow.svg" alt="Flow: Requirements → API & Data Model → High-Level Architecture → Capacity & Scaling → Reliability → Trade-offs & Risks → Presentation" />
-      <figcaption>The design loop: clarify requirements first, then iterate from API &amp; data model to architecture, capacity, and reliability. Close with trade-offs and risks.</figcaption>
-    </figure>
-
     <section class="section" aria-labelledby="choose">
       <h2 id="choose">7.1 Choose a Sample Problem</h2>
       <p>Select one of the three baseline problems. Each is small enough to finish quickly but rich enough to exercise real design choices.</p>
@@ -138,12 +132,6 @@
     <section class="section" aria-labelledby="hld">
       <h2 id="hld">7.3 High-Level Design (Components &amp; Data Flow)</h2>
       <p>This section walks through a URL shortener design. Adapt the pattern to the other problems as practice.</p>
-
-      <figure>
-        <img src="assets/url-shortener-arch.svg" alt="Architecture: Client → CDN/Edge → API → App (stateless) → Cache → DB; Admin/Analytics path → event queue → OLAP store" />
-        <figcaption>URL shortener HLD: read-heavy flow served by edge + cache; writes go to DB with idempotency and optional queue for analytics.</figcaption>
-      </figure>
-
       <h3 id="api">API &amp; Contracts</h3>
       <ul>
         <li><code>POST /links</code> → <code>{ longUrl, customAlias? }</code> → <code>{ code, shortUrl }</code> (201). <em>Idempotency-Key</em> header to avoid duplicates.</li>
@@ -252,12 +240,6 @@
           </ul>
         </div>
       </div>
-
-      <figure>
-        <img src="assets/tradeoffs-triangle.svg" alt="Triangle annotated with Performance, Reliability, Maintainability and examples of choices that pull each corner" />
-        <figcaption>Every choice pulls one or more corners of the design triangle. Name the trade-off explicitly and why it’s acceptable for your goals.</figcaption>
-      </figure>
-
       <div class="callout info">
         <strong>Analogy:</strong> Think of your design like packing for a trip with baggage limits: you can’t bring everything. Prioritize items (features/guarantees) that match the itinerary (use cases) and weather (traffic patterns).
       </div>
@@ -392,7 +374,6 @@
   - [x] Sections meet depth: 7.1–7.4 + examples, comparison, analogy, trade-offs
   - [x] Practice (5 tasks) with time + success criteria
   - [x] Mastery (6–7 Qs) with sample answers
-  - [x] ≥3 figures: design-flow.svg, url-shortener-arch.svg, tradeoffs-triangle.svg under /assets
   - [x] ≥8 glossary-style terms via <abbr> (API, latency, RPS, TTL, idempotency, CDN, rate limiting, RPO)
   - [x] Recap + Next steps
   -->

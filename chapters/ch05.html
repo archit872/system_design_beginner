@@ -61,12 +61,6 @@
         </div>
       </div>
     </section>
-
-    <figure>
-      <img src="assets/scaling-strategies.svg" alt="Side-by-side diagram of vertical scaling (bigger box) vs horizontal scaling (many small boxes behind a balancer)" />
-      <figcaption>Two levers: scale up (bigger machine) vs. scale out (more machines). Most internet services favor scale out for resilience and elasticity.</figcaption>
-    </figure>
-
     <section class="section" aria-labelledby="scaling-basics">
       <h2 id="scaling-basics">5.1 Scaling Basics: Vertical vs. Horizontal</h2>
       <p><strong>Vertical scaling</strong> increases resources (CPU/RAM/IO) on a single node. It’s simple—no distributed complexity—but has hard limits and creates a single large blast radius. It’s ideal for short-term relief, monolithic DBs that benefit from large RAM for buffer caches, or when software isn’t ready to shard.</p>
@@ -98,12 +92,6 @@
     <section class="section" aria-labelledby="load-balancers">
       <h2 id="load-balancers">5.2 Load Balancers Explained</h2>
       <p>A <strong>load balancer (LB)</strong> sits in front of a fleet and distributes traffic across healthy replicas. L4 balancers operate on TCP/UDP connections (faster, simpler); L7 balancers understand HTTP semantics (paths, headers) and can route by URL, cookie, or host.</p>
-
-      <figure>
-        <img src="assets/load-balancer-algorithms.svg" alt="Diagram showing round-robin, least-connections, and consistent-hashing request distribution to backend servers" />
-        <figcaption>Common algorithms: <em>round robin</em> rotates sequentially, <em>least connections</em> favors less-busy nodes, <em>consistent hashing</em> keeps a user’s requests on the same shard.</figcaption>
-      </figure>
-
       <div class="grid two">
         <div class="card">
           <h3 class="mt-0">Algorithms</h3>
@@ -135,10 +123,6 @@
       <p><strong>Stateful services</strong> retain session-specific or partition-specific state (e.g., in-memory rooms for a WebSocket chat, primary DB nodes). They often require <em>stickiness</em> (route a user to the same node) or a <em>consistency protocol</em> to move/replicate state safely.</p>
 
       <div class="grid two">
-        <figure>
-          <img src="assets/stateless-vs-stateful.svg" alt="Two diagrams: stateless service with shared cache/db; stateful service with sticky sessions and shard ownership" />
-          <figcaption>Stateless scales via replicas; stateful requires ownership, stickiness, or partitioning.</figcaption>
-        </figure>
         <div class="card">
           <h3 class="mt-0">Design Tips</h3>
           <ul>
@@ -157,12 +141,6 @@
     <section class="section" aria-labelledby="bottlenecks">
       <h2 id="bottlenecks">5.4 Identifying &amp; Resolving Bottlenecks</h2>
       <p>A system’s <strong>throughput</strong> is limited by its slowest stage. Finding that stage requires measurement, not guesswork. Use this loop:</p>
-
-      <figure>
-        <img src="assets/bottleneck-method.svg" alt="Loop diagram: Measure → Hypothesize → Isolate → Fix → Verify → Repeat" />
-        <figcaption>Performance loop: measure before and after, change one variable at a time, and verify improvement at p95/p99 not just average.</figcaption>
-      </figure>
-
       <ol>
         <li><strong>Measure:</strong> Capture baseline latency percentiles and component metrics (LB, app, DB, cache). Gather request IDs and traces.</li>
         <li><strong>Hypothesize:</strong> Do histograms show queueing? Is DB CPU or IO-bound? Are caches missing?</li>
@@ -312,7 +290,6 @@
   - [x] Sections meet depth: 5.1–5.4 + examples, compare/contrast, analogy, trade-offs
   - [x] Practice (3–4 tasks) with time + success criteria
   - [x] Mastery (6–7 Qs) with sample answers
-  - [x] ≥3 figures: scaling-strategies.svg, load-balancer-algorithms.svg, stateless-vs-stateful.svg, bottleneck-method.svg under /assets
   - [x] ≥8 glossary-style terms via <abbr> (vertical, horizontal, load balancer, L4, L7, consistent hashing, stateless, bottleneck, throughput)
   - [x] Recap + Next steps
   -->
