@@ -1,210 +1,315 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <base href="../"> 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chapter 6 — Reliability & Fault Tolerance</title>
-  <meta name="description" content="Redundancy, failover, disaster recovery, monitoring, and alerting basics with examples, practice, and mastery." />
-  <meta property="og:title" content="Chapter 6 — Reliability & Fault Tolerance" />
-  <meta property="og:description" content="Learn why systems fail, how to design for redundancy, handle failover, recover from disasters, and monitor health." />
-  <link rel="stylesheet" href="styles/theme.css" />
-  <script defer src="scripts/app.js"></script>
+  <meta charset="utf-8">
+  <title>Ch. 6 — Reliability & Fault Tolerance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Design for failure: redundancy, failover, disaster recovery, monitoring, logging, and alerting. Learn patterns that keep systems running under faults.">
+  <meta property="og:title" content="Chapter 6 — Reliability & Fault Tolerance">
+  <meta property="og:description" content="Redundancy, failover, DR, SLIs/SLOs, alerts, and fault-tolerant patterns like retries, timeouts, and circuit breakers.">
+  <base href="../">
+  <link rel="stylesheet" href="styles/theme.css">
+  <script src="scripts/app.js" defer></script>
 </head>
 <body>
-  <!-- Canonical Navigation -->
-  <nav class="app-nav" aria-label="Primary">
-    <a href="index.html">Home</a>
-    <a href="chapters/ch01.html">Chapter 1</a>
-    <a href="chapters/ch02.html">Chapter 2</a>
-    <a href="chapters/ch03.html">Chapter 3</a>
-    <a href="chapters/ch04.html">Chapter 4</a>
-    <a href="chapters/ch05.html">Chapter 5</a>
-    <a href="chapters/ch06.html" aria-current="page">Chapter 6</a>
-    <a href="chapters/ch07.html">Chapter 7</a>
-    <a href="chapters/ch08.html">Chapter 8</a>
-    <a href="chapters/appendix.html">Appendix</a>
-    <a href="chapters/glossary.html">Glossary</a>
-    <button class="nav-toggle" aria-label="Toggle menu" style="margin-left:auto">☰</button>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Canonical Navigation (copy verbatim across all pages) -->
+  <nav class="app-nav">
+    <div class="container inner">
+      <div class="brand">System Design (Beginner)</div>
+      <button class="toggle js-nav-toggle" aria-expanded="false" aria-controls="site-menu" aria-label="Toggle menu">☰ Menu</button>
+      <div id="site-menu" class="menu" role="navigation" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="chapters/ch01.html">Chapters</a>
+        <a href="chapters/appendix.html">Appendix</a>
+        <a href="chapters/glossary.html">Glossary</a>
+      </div>
+    </div>
   </nav>
 
-  <main>
-    <header class="page-hero">
-      <p class="badge" style="color:var(--muted);letter-spacing:.08em;">CHAPTER 6</p>
+  <header class="page-hero" id="top">
+    <div class="container">
+      <div class="meta">
+        <span class="badge badge-primary">Chapter 6</span>
+        <span class="badge">Reliability</span>
+      </div>
       <h1>Reliability &amp; Fault Tolerance</h1>
-      <p style="max-width:72ch;margin-top:.5rem">
-        Reliability means your system works when users need it. Fault tolerance is the art of surviving failures gracefully.  
-        In this chapter you’ll learn <strong><a href="chapters/glossary.html#redundancy">redundancy</a></strong> techniques, <strong><a href="chapters/glossary.html#failover">failover</a></strong> and disaster recovery, and the basics of <strong><a href="chapters/glossary.html#monitoring">monitoring</a></strong> and alerting.  
-        You’ll adapt your scalable web app to add resilience against crashes and outages.
-      </p>
-    </header>
+      <p class="abstract">Reliable systems assume components will fail and still deliver acceptable service. You’ll learn redundancy and <abbr title="Automatic switch to a standby component when the primary fails">failover</abbr> patterns, <abbr title="Disaster Recovery: policies and architecture to survive regional outages">DR</abbr> strategies, and the basics of <abbr title="Monitoring: metrics; Logging: textual records; Tracing: request flows">monitoring, logging, and tracing</abbr>—all governed by measurable <abbr title="Service Level Indicators and Objectives">SLIs/SLOs</abbr> and budgets.</p>
+    </div>
+  </header>
 
-    <section aria-labelledby="objectives">
-      <h2 id="objectives">Learning Objectives</h2>
-      <ul class="resource-list">
-        <li>Identify common failure modes in distributed systems.</li>
-        <li>Explain <a href="chapters/glossary.html#replication">replication</a>, <a href="chapters/glossary.html#redundancy">redundancy</a>, and <a href="chapters/glossary.html#backup">backups</a>.</li>
-        <li>Describe <a href="chapters/glossary.html#failover">failover</a> and disaster recovery basics.</li>
-        <li>Apply monitoring and alerting for critical SLIs.</li>
-      </ul>
+  <main id="main" class="container section">
+    <section class="section" aria-labelledby="prereqs">
+      <h2 id="prereqs">Prerequisites &amp; Learning Objectives</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">Prerequisites</h3>
+          <ul>
+            <li>Chapter 3 (replication basics) and Chapter 5 (load balancing, statelessness).</li>
+            <li>Basic understanding of HTTP request flows and caches.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="mt-0">Objectives</h3>
+          <ul>
+            <li>Define <abbr title="Uptime percentage over a window">availability</abbr>, <abbr title="Probability that acknowledged data is not lost">durability</abbr>, and how they differ.</li>
+            <li>Design redundancy and failover at each tier (LB, app, cache, DB).</li>
+            <li>Plan disaster recovery with recovery <abbr title="Recovery Time Objective — how long you can be down">RTO</abbr> and <abbr title="Recovery Point Objective — acceptable data loss window">RPO</abbr> targets.</li>
+            <li>Set <abbr title="Measurable indicators (SLIs) and goals (SLOs) for service quality">SLIs/SLOs</abbr> and wire up monitoring, logging, and alerting.</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
-    <figure aria-labelledby="fig6">
-      <svg width="100%" height="280" viewBox="0 0 900 280" role="img">
-        <title id="fig6">Redundant architecture with failover</title>
-        <!-- LB -->
-        <rect x="60" y="100" width="160" height="60" rx="10" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="140" y="135" text-anchor="middle" fill="#e6edf3" font-size="12">Load Balancer</text>
-        <line x1="220" y1="130" x2="320" y2="90" stroke="#7a87ff"/>
-        <line x1="220" y1="130" x2="320" y2="170" stroke="#7a87ff"/>
-        <!-- Servers -->
-        <rect x="320" y="60" width="120" height="60" rx="10" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="380" y="95" text-anchor="middle" fill="#e6edf3" font-size="12">App A</text>
-        <rect x="320" y="140" width="120" height="60" rx="10" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="380" y="175" text-anchor="middle" fill="#e6edf3" font-size="12">App B</text>
-        <!-- DB replicas -->
-        <ellipse cx="580" cy="90" rx="70" ry="40" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="580" y="95" text-anchor="middle" fill="#e6edf3" font-size="12">DB Primary</text>
-        <ellipse cx="580" cy="190" rx="70" ry="40" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="580" y="195" text-anchor="middle" fill="#e6edf3" font-size="12">DB Replica</text>
-        <line x1="440" y1="90" x2="510" y2="90" stroke="#7a87ff"/>
-        <line x1="440" y1="170" x2="510" y2="190" stroke="#7a87ff"/>
-      </svg>
-      <figcaption>Figure 6. Redundant architecture: multiple app servers behind a load balancer, replicated databases with failover to replica.</figcaption>
+    <figure>
+      <img src="assets/reliability-layers.svg" alt="Stack diagram showing reliability at layers: DNS, CDN/Edge, Load Balancer, App, Cache, Database, Queue, Storage, with redundancy arrows" />
+      <figcaption>Reliability is layered: redundancy and failover should exist at DNS, edge, compute, caches, data stores, and queues—each with health checks and timeouts.</figcaption>
     </figure>
 
-    <section aria-labelledby="s61">
-      <h2 id="s61">6.1 Why Systems Fail</h2>
-      <p>
-        Systems fail due to hardware crashes, software bugs, misconfigurations, overload, or external factors (network partitions, DDoS).  
-        Reliability engineering accepts that failures are inevitable and designs to mitigate blast radius and recovery time.
-      </p>
-      <div class="callout info"><strong>Analogy:</strong> Airplanes have multiple engines and backup instruments. Even if one fails, the plane continues safely.</div>
-      <div class="callout warn"><strong>Pitfall:</strong> Assuming cloud providers guarantee 100% uptime. They offer high availability zones, but you must architect across them.</div>
+    <section class="section" aria-labelledby="fail">
+      <h2 id="fail">6.1 Why Systems Fail</h2>
+      <p>Failures are <strong>normal</strong>: disks die, networks partition, processes crash, and humans misconfigure. Designing for reliability means assuming failure and making it <em>contained</em>, <em>observable</em>, and <em>recoverable</em>. Common failure modes:</p>
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">Typical Faults</h3>
+          <ul>
+            <li><strong>Hardware:</strong> disk/CPU/memory faults; <abbr title="Power, cooling, or rack-level outages">datacenter</abbr> incidents.</li>
+            <li><strong>Network:</strong> packet loss, <abbr title="Loss of communication between nodes">partitions</abbr>, DNS/cert expiry.</li>
+            <li><strong>Software:</strong> memory leaks, deadlocks, slow GC, dependency timeouts.</li>
+            <li><strong>Operations:</strong> bad deploys, schema migrations, expired credentials.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="mt-0">Containment Tactics</h3>
+          <ul>
+            <li>Timeouts on every hop; <abbr title="Retry with exponentially increasing intervals and jitter to avoid herd effects">exponential backoff with jitter</abbr>.</li>
+            <li><abbr title="A protective switch that stops calls to a failing dependency">Circuit breakers</abbr> and <abbr title="Limit the rate of requests to preserve service">rate limits</abbr>.</li>
+            <li>Bulkheads: isolate pools/threads per dependency to prevent cascading failures.</li>
+            <li>Graceful degradation: serve cached or partial results during incidents.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout info">
+        <strong>Analogy:</strong> Ships are divided into watertight compartments (bulkheads) so a hull breach doesn’t sink the vessel. Services need bulkheads across threads, connections, and queues.
+      </div>
     </section>
 
-    <section aria-labelledby="s62">
-      <h2 id="s62">6.2 Replication, Redundancy &amp; Backups</h2>
-      <p>
-        <strong><a href="chapters/glossary.html#replication">Replication</a></strong> ensures multiple copies of data. <strong><a href="chapters/glossary.html#redundancy">Redundancy</a></strong> duplicates components (servers, networks) so one can fail without outage.  
-        <strong><a href="chapters/glossary.html#backup">Backups</a></strong> protect against corruption or deletion.
-      </p>
-      <h3>Compare &amp; Contrast</h3>
-      <table style="width:100%;border-collapse:collapse">
-        <thead><tr><th>Technique</th><th>Purpose</th><th>Trade-off</th></tr></thead>
-        <tbody>
-          <tr><td>Replication</td><td>High availability, read scaling</td><td>Lag, consistency issues</td></tr>
-          <tr><td>Redundancy</td><td>Resilience to component failure</td><td>Higher cost</td></tr>
-          <tr><td>Backups</td><td>Disaster recovery, corruption fix</td><td>Restore may be slow</td></tr>
-        </tbody>
-      </table>
-      <div class="callout success"><strong>Case study:</strong> A fintech keeps hot replicas in the same region for fast failover, plus cold backups in another region for disaster recovery. This layered approach balances RTO (minutes) and cost.</div>
+    <section class="section" aria-labelledby="redundancy">
+      <h2 id="redundancy">6.2 Replication, Redundancy &amp; Backups</h2>
+      <p>Reliability starts with eliminating single points of failure (SPOFs). Provide at least N+1 capacity for critical components and <strong>health-check</strong> everything.</p>
+
+      <figure>
+        <img src="assets/redundancy-patterns.svg" alt="Patterns: active-active, active-passive, and N+1 for app and database tiers, with arrows showing failover" />
+        <figcaption>Active–active maximizes capacity and failover speed; active–passive reduces cost but increases failover time; N+1 ensures spare capacity during maintenance or incidents.</figcaption>
+      </figure>
+
+      <h3 id="active-active">Active–Active</h3>
+      <p>Multiple replicas serve traffic simultaneously. If one fails, others absorb load. Requires <abbr title="Consistent view of cluster membership and health">distributed coordination</abbr>, and for stateful systems, careful replication to avoid split brain.</p>
+
+      <h3 id="active-passive">Active–Passive</h3>
+      <p>A hot or warm standby takes over when primary fails. Simpler for databases with leader/follower replication. Failover can be automatic or manual; <abbr title="Mean Time To Recover">MTTR</abbr> is higher than active–active.</p>
+
+      <h3 id="backups">Backups</h3>
+      <p>Backups are your last line of defense against data loss and corruption. Test restores regularly. Store backups in a separate account/region and encrypt. Track <abbr title="Recovery Point Objective: maximum tolerable data loss">RPO</abbr> and restore time against <abbr title="Recovery Time Objective: maximum tolerable downtime">RTO</abbr>.</p>
+
+      <div class="callout warn">
+        <span class="icon">⚖️</span>
+        <strong>Trade-off:</strong> Synchronous cross-zone/region replication reduces RPO but increases <abbr title="Time from request to response">latency</abbr> and may reduce availability during partitions. Choose the weakest guarantees that meet user needs.
+      </div>
     </section>
 
-    <section aria-labelledby="s63">
-      <h2 id="s63">6.3 Fault-Tolerant Design Patterns</h2>
+    <section class="section" aria-labelledby="dr">
+      <h2 id="dr">6.3 Fault-Tolerant Design &amp; Disaster Recovery</h2>
+      <p>Fault tolerance combines <em>preventive</em> patterns (timeouts, retries, bulkheads) with <em>restorative</em> strategies (failover and DR).</p>
+
+      <figure>
+        <img src="assets/dr-strategies.svg" alt="Table-like diagram: Backup & Restore, Pilot Light, Warm Standby, Multi-Region Active-Active with RTO/RPO arrows" />
+        <figcaption>DR options: <em>Backup &amp; restore</em> (cheap, slow), <em>Pilot light</em> (core services always on), <em>Warm standby</em> (scaled-down full stack), <em>Active–active</em> (fast, expensive).</figcaption>
+      </figure>
+
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">Fault-Tolerant Patterns</h3>
+          <ul>
+            <li><strong>Timeouts &amp; retries:</strong> Always bound waits; use idempotency keys and exponential backoff.</li>
+            <li><strong>Circuit breaker:</strong> Trip on elevated error rates/latency; serve fallbacks while probing recovery.</li>
+            <li><strong>Bulkheads:</strong> Dedicated connection/thread pools per dependency.</li>
+            <li><strong>Load shedding:</strong> Reject low-priority work when overloaded to preserve core flows.</li>
+            <li><strong>Idempotent writes:</strong> Ensure safe retries across failovers.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="mt-0">DR Planning</h3>
+          <ul>
+            <li>Define <strong>RPO/RTO</strong> per service; align with business impact tiers.</li>
+            <li>Automate failover runbooks; test via <em>game days</em> and <em>chaos drills</em>.</li>
+            <li>Use <strong>infrastructure as code</strong> for reproducible recovery.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="observability">
+      <h2 id="observability">6.4 Monitoring, Logging &amp; Alerts Basics</h2>
+      <p><strong>Observability</strong> is your ability to explain system state from external outputs. It rests on three pillars: <strong>metrics</strong> (numeric time series), <strong>logs</strong> (structured records), and <strong>traces</strong> (request timelines). Define <abbr title="Quantitative measures of service health, e.g., latency, error rate">SLIs</abbr> and set <abbr title="Target values for SLIs, e.g., p95 &lt; 300 ms, 99.9% availability">SLOs</abbr> with <em>error budgets</em> that inform release pace.</p>
+
+      <figure>
+        <img src="assets/observability-stack.svg" alt="Diagram: exporters → metrics DB (time series), log store, trace collector → dashboards and alerts" />
+        <figcaption>Observability stack: instrumentation exports signals; storage backends retain them; dashboards and alerts turn signals into action.</figcaption>
+      </figure>
+
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">Minimum Dashboard</h3>
+          <ul>
+            <li>Requests/sec, error rate, and p50/p95/p99 latency (per endpoint).</li>
+            <li>Dependency health (DB CPU/IO, cache hit rate, queue depth).</li>
+            <li>Saturation (CPU, memory, connection pools).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="mt-0">Alerting Hygiene</h3>
+          <ul>
+            <li>Alert on <em>user-impacting</em> symptoms (SLO burn) not just internal noise.</li>
+            <li>Use <abbr title="Notifications throttled to avoid alert storms">deduplication and rate limits</abbr> for paging.</li>
+            <li>Every page links to a runbook; track <abbr title="Mean Time To Detect">MTTD</abbr> and <abbr title="Mean Time To Resolve">MTTR</abbr>.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout warn">
+        <strong>Pitfall:</strong> Over-alerting trains people to ignore pages. Start with SLO-based burn alerts and a small set of golden signals; add detail dashboards for diagnosis.
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="case">
+      <h2 id="case">Case Study: Surviving a Cache Cluster Outage (≈200 words)</h2>
+      <p>A social app relies on a 3-node Redis cluster for hot feeds. One morning, a networking fault isolates a node; the client library thrashes between nodes, raising tail latency and error rates. The team executes their playbook. <strong>Containment:</strong> Circuit breakers trip for non-critical endpoints; read timeouts cut from 2s → 600ms with jittered retries. <strong>Degradation:</strong> Feeds downgrade to “recent global posts” if cache misses exceed a threshold; CDN continues serving static assets. <strong>Failover:</strong> Traffic shifts away from the impacted shard via consistent-hashing ring update; autoscaling adds two app replicas to absorb extra DB reads. <strong>Recovery:</strong> Once networking stabilizes, the team warms the cache using a background job and gradually restores full features.</p>
+      <p>Impact: user-visible errors are limited to a 15-minute window; p95 latency stays within SLO for critical endpoints. A blameless postmortem reveals the need for better connection-pool bulkheads and improves the cache-warm strategy. The incident validates layered defenses—timeouts, bulkheads, graceful degradation, and controlled failover—turning a potential outage into a manageable blip.</p>
+    </section>
+
+    <section class="section" aria-labelledby="resources">
+      <h2 id="resources">Resources</h2>
       <ul class="resource-list">
-        <li><strong><a href="chapters/glossary.html#failover">Failover</a>:</strong> Automatic switch to replica/standby on failure.</li>
-        <li><strong><a href="chapters/glossary.html#graceful-degradation">Graceful degradation</a>:</strong> Offer limited service when dependencies fail (e.g., show cached timeline without live updates).</li>
-        <li><strong><a href="chapters/glossary.html#retry">Retries with backoff</a>:</strong> Retry transient failures, but avoid thundering herd.</li>
-        <li><strong><a href="chapters/glossary.html#circuit-breaker">Circuit breaker</a>:</strong> Cut traffic to failing dependency, return fallback.</li>
-        <li><strong><a href="chapters/glossary.html#bulkhead">Bulkheads</a>:</strong> Isolate components to limit cascading failures.</li>
-      </ul>
-      <div class="callout danger"><strong>Trade-off:</strong> Too aggressive retries can overload a recovering service. Design with exponential backoff and jitter.</div>
-    </section>
-
-    <section aria-labelledby="s64">
-      <h2 id="s64">6.4 Monitoring, Logging &amp; Alerts Basics</h2>
-      <p>
-        <strong><a href="chapters/glossary.html#monitoring">Monitoring</a></strong> collects metrics (CPU, latency, error rate).  
-        <strong><a href="chapters/glossary.html#logging">Logging</a></strong> records detailed events.  
-        <strong><a href="chapters/glossary.html#alerting">Alerting</a></strong> notifies humans when <a href="chapters/glossary.html#slo">SLOs</a> are violated.
-      </p>
-      <h3>Key Metrics (Golden Signals)</h3>
-      <ul class="resource-list">
-        <li><strong>Latency:</strong> Time to serve a request.</li>
-        <li><strong>Traffic:</strong> Requests per second.</li>
-        <li><strong>Errors:</strong> Error rate (%).</li>
-        <li><strong>Saturation:</strong> Resource usage (CPU, memory, threads).</li>
-      </ul>
-      <div class="callout success"><strong>Mini Case Study:</strong> A video platform sets an SLO: 99.9% of streams must start under 5 seconds. Monitoring reveals p95=4s but p99=15s in one region. Investigation shows packet loss. They add regional redundancy and CDN tuning. Result: p99 drops under 6s. Lesson: reliability means serving the long tail, not just the median.</div>
-    </section>
-
-    <section aria-labelledby="resources">
-      <h2 id="resources">Recommended Resources</h2>
-      <ul class="resource-list">
-        <li><a href="https://sre.google/sre-book/table-of-contents/" target="_blank" rel="noopener">Google SRE Book (Ch. 1–3)</a> — foundational reliability engineering principles.</li>
-        <li><a href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html" target="_blank" rel="noopener">AWS Well-Architected Framework: Reliability Pillar</a> — practical cloud guidance.</li>
-        <li>Optional: Netflix Tech Blog — Chaos Engineering experiments.</li>
+        <li class="item">
+          <div>
+            <a class="external" href="https://sre.google/sre-book/table-of-contents/" target="_blank">Google SRE Book</a>
+            <div class="meta">Foundational reading on SLIs/SLOs, error budgets, and incident response.</div>
+          </div>
+          <span class="badge">SRE</span>
+        </li>
+        <li class="item">
+          <div>
+            <a class="external" href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html" target="_blank">AWS Well-Architected — Reliability Pillar</a>
+            <div class="meta">Cloud-oriented guidance for redundancy, failover, and disaster recovery patterns.</div>
+          </div>
+          <span class="badge">Cloud</span>
+        </li>
+        <li class="item">
+          <div>
+            <a class="external" href="https://opentelemetry.io/docs/" target="_blank">OpenTelemetry Docs</a>
+            <div class="meta">Standardized instrumentation for metrics, logs, and traces.</div>
+          </div>
+          <span class="badge">Observability</span>
+        </li>
       </ul>
     </section>
 
-    <section aria-labelledby="practice">
-      <h2 id="practice">Practice</h2>
-      <ol class="practice">
-        <li><strong>Failure mapping (25–30 min):</strong> List 5 possible failures in your messaging app (server crash, DB outage, cache miss storm). For each, propose mitigation. <em>Success:</em> Each failure has at least one redundancy/failover pattern.</li>
-        <li><strong>Monitoring design (20–25 min):</strong> Choose 3 SLIs (latency, error rate, traffic). Sketch a dashboard. <em>Success:</em> Includes thresholds and alert policy.</li>
-        <li><strong>Chaos drill (30 min):</strong> Simulate a DB outage (hypothetically or via chaos tool). Write how your app should behave. <em>Success:</em> Degraded but not total outage; recovery path clear.</li>
+    <section class="section practice" aria-labelledby="practice">
+      <div class="title">Practice <span class="badge">35–60 min</span></div>
+      <h2 id="practice" class="mt-1">Hands-on Tasks</h2>
+      <ol>
+        <li><strong>Write a failure story (10–15 min).</strong> Pick one component from your capstone and describe a realistic failure. List symptoms, blast radius, and a containment plan. <em>Success:</em> Includes timeouts, backoff, and a user-facing fallback.</li>
+        <li><strong>RPO/RTO (10–15 min).</strong> Define target RPO/RTO for your data store and map to a DR choice (backup &amp; restore, warm standby, or active–active). <em>Success:</em> Targets have numbers (e.g., RPO ≤ 1 min, RTO ≤ 30 min) and a brief cost rationale.</li>
+        <li><strong>Observability MVP (10–15 min).</strong> Propose SLIs/SLOs and a “golden signals” dashboard (RPS, errors, latency percentiles, saturation). <em>Success:</em> SLOs tie to alert thresholds with links to runbooks.</li>
+        <li><strong>Chaos drill (optional, 10–15 min).</strong> Simulate a dependency timeout in dev; verify circuit breaker behavior and fallbacks. <em>Success:</em> Error rate contained; logs and metrics confirm expected paths.</li>
       </ol>
     </section>
 
-    <section aria-labelledby="mastery">
-      <h2 id="mastery">Mastery Check</h2>
-      <ol class="mastery">
-        <li><strong>Define:</strong> What is fault tolerance?
-          <details><summary>Sample answer</summary><p>The ability of a system to continue functioning correctly even when some components fail.</p></details>
-        </li>
-        <li><strong>Explain:</strong> Difference between replication and backups?
-          <details><summary>Sample answer</summary><p>Replication makes live copies for availability; backups are offline copies for disaster recovery and corruption recovery.</p></details>
-        </li>
-        <li><strong>Apply:</strong> YouTube must survive a server crash. What redundancy would you add?
-          <details><summary>Sample answer</summary><p>Multiple app servers behind a load balancer, DB replicas, CDN for video. If one server dies, traffic shifts seamlessly.</p></details>
-        </li>
-        <li><strong>Evaluate:</strong> Why are alerts on CPU spikes alone insufficient?
-          <details><summary>Sample answer</summary><p>High CPU may not impact users; what matters are SLIs like latency and error rate. Alerts should align to SLOs.</p></details>
-        </li>
-        <li><strong>Explain:</strong> What is graceful degradation?
-          <details><summary>Sample answer</summary><p>Maintaining partial functionality during failure (e.g., cached timeline without live chat).</p></details>
-        </li>
-        <li><strong>Apply:</strong> A cache cluster fails. How do you avoid total outage?
-          <details><summary>Sample answer</summary><p>Fallback to DB reads with rate limiting; circuit breaker to shed load if DB saturates.</p></details>
-        </li>
-      </ol>
+    <section class="section mastery" aria-labelledby="mastery">
+      <div class="title">Mastery Check <span class="badge">Self-assessment</span></div>
+      <h2 id="mastery" class="mt-1">Questions (with sample answers)</h2>
+
+      <details>
+        <summary>1) Distinguish availability from durability with examples.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> Availability is “can I access the service now?” Durability is “will my stored data still exist later?” A service can be down (0% availability) yet not lose data (high durability), or be up but lose recent writes after failover (low durability).</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>2) Why are timeouts and retries both necessary—and dangerous?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> Timeouts prevent threads from hanging; retries heal transient errors. Without backoff and idempotency, retries create traffic storms and duplicate side effects, worsening outages.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>3) Compare active–active vs. active–passive for a database.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> Active–active gives fast failover and higher throughput but needs conflict resolution and careful consistency. Active–passive is simpler with leader/follower replication but has higher RTO.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>4) What does an error budget guide you to do?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> It balances reliability and velocity: if you’re burning budget too fast, slow down releases/hardening; if budget is healthy, you can safely ship more changes.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>5) Give a concrete example of graceful degradation.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> If recommendations are down, serve a cached “popular now” list and hide personalization badges so users can still browse and purchase.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>6) Define RPO and RTO and map each to a control.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> RPO is max tolerable data loss → controlled by replication and backup frequency; RTO is max tolerable downtime → controlled by automation and warm capacity.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>7) What is a bulkhead and where would you use it?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> An isolation barrier (e.g., dedicated connection/thread pools per dependency) that prevents a failing downstream from exhausting all resources and taking the service down.</p>
+        </div>
+      </details>
     </section>
 
-    <section aria-labelledby="recap">
+    <section class="section" aria-labelledby="recap">
       <h2 id="recap">Recap &amp; Next Steps</h2>
-      <p>
-        You explored reliability concepts: redundancy, failover, backups, fault-tolerant patterns, and monitoring.  
-        Next we’ll practice designing a complete system, applying all concepts together in a step-by-step exercise.
-      </p>
+      <p><strong>Recap:</strong> You learned to design for failure: redundancy and failover patterns, DR strategies tuned by RPO/RTO, and an observability baseline grounded in SLIs/SLOs. You practiced writing a failure story, defining budgets, and planning dashboards.</p>
+      <p><strong>Next:</strong> In <a href="chapters/ch07.html">Chapter 7</a>, you’ll apply everything in a guided design—choosing a problem (e.g., URL shortener), gathering requirements, and making storage, caching, and scaling choices with explicit trade-offs.</p>
     </section>
 
-    <nav class="next-prev" aria-label="Chapter pagination">
-      <a rel="prev" href="chapters/ch05.html" aria-label="Previous: Chapter 5">← Prev</a>
-      <a rel="next" href="chapters/ch07.html" aria-label="Next: Chapter 7">Next →</a>
+    <nav class="next-prev" aria-label="Chapter pager">
+      <a rel="prev" href="chapters/ch05.html">Previous: Scalability &amp; Load Handling</a>
+      <a rel="next" href="chapters/ch07.html">Next: Guided Practice — Designing a Simple System</a>
     </nav>
-
-    <footer style="margin-top:2rem;color:var(--muted)">
-      <p>End of Chapter 6</p>
-    </footer>
   </main>
 
-  <!-- VALIDATION & MAPPING CHECKLIST
-  - [x] theme.css+app.js loaded
-  - [x] Canonical nav used verbatim; active link correct
-  - [x] Pager correct (prev=ch05, next=ch07)
-  - [x] ToC order matches file numbering
-  - [x] Sections present (objectives/resources/practice/mastery) and meet minimums
-  - [x] Glossary links valid (to be created)
-  - [x] Head/meta ok
-  - [x] No TODOs
-  -- Depth quick checks --
-  - [x] Chapter word count ≥ 1,200
-  - [x] ≥ 2 examples, ≥ 1 case study, ≥ 1 compare/contrast, ≥ 1 analogy
-  - [x] Practice: 3–5 tasks with criteria
-  - [x] Mastery: 5–7 Qs with <details> answers
-  - [x] ≥ 8 glossary terms introduced; ≥ 1 figure with caption
+  <footer class="site-footer">
+    <div class="container">
+      <p class="mb-0">© 2025 System Design (Beginner). Chapter 6.</p>
+    </div>
+  </footer>
+
+  <!--
+  CHECKLIST (do not remove)
+  - [x] /styles/theme.css + /scripts/app.js linked (paths correct for /chapters/)
+  - [x] <base href="../"> present & correct
+  - [x] Canonical nav verbatim; active link via app.js
+  - [x] Pager prev=ch05, next=ch07
+  - [x] Sections meet depth: 6.1–6.4 + examples, compare/contrast, analogy, trade-offs
+  - [x] Practice (3–4 tasks) with time + success criteria
+  - [x] Mastery (6–7 Qs) with sample answers
+  - [x] ≥4 figures: reliability-layers.svg, redundancy-patterns.svg, dr-strategies.svg, observability-stack.svg under /assets
+  - [x] ≥8 glossary-style terms via <abbr> (availability, durability, MTTR, RTO, RPO, circuit breaker, bulkhead, SLI/SLO, error budget)
+  - [x] Recap + Next steps
   -->
 </body>
 </html>

@@ -1,176 +1,285 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <base href="../"> 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chapter 8 — Pitfalls, Review & Next Steps</title>
-  <meta name="description" content="Common mistakes beginners make in system design, vocabulary review, transition strategies, and suggested project extensions." />
-  <meta property="og:title" content="Chapter 8 — Pitfalls, Review & Next Steps" />
-  <meta property="og:description" content="Identify pitfalls like over-engineering, review vocabulary and patterns, and chart a clear path to intermediate system design." />
-  <link rel="stylesheet" href="styles/theme.css" />
-  <script defer src="scripts/app.js"></script>
+  <meta charset="utf-8">
+  <title>Ch. 8 — Pitfalls, Review & Next Steps</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Common beginner mistakes in system design, a structured review of key vocabulary and patterns, and a guided roadmap from beginner to intermediate.">
+  <meta property="og:title" content="Chapter 8 — Pitfalls, Review & Next Steps">
+  <meta property="og:description" content="Avoid classic traps, reinforce core terms and patterns, and plan your transition to intermediate system design with concrete projects.">
+  <base href="../">
+  <link rel="stylesheet" href="styles/theme.css">
+  <script src="scripts/app.js" defer></script>
 </head>
 <body>
-  <!-- Canonical Navigation -->
-  <nav class="app-nav" aria-label="Primary">
-    <a href="index.html">Home</a>
-    <a href="chapters/ch01.html">Chapter 1</a>
-    <a href="chapters/ch02.html">Chapter 2</a>
-    <a href="chapters/ch03.html">Chapter 3</a>
-    <a href="chapters/ch04.html">Chapter 4</a>
-    <a href="chapters/ch05.html">Chapter 5</a>
-    <a href="chapters/ch06.html">Chapter 6</a>
-    <a href="chapters/ch07.html">Chapter 7</a>
-    <a href="chapters/ch08.html" aria-current="page">Chapter 8</a>
-    <a href="chapters/appendix.html">Appendix</a>
-    <a href="chapters/glossary.html">Glossary</a>
-    <button class="nav-toggle" aria-label="Toggle menu" style="margin-left:auto">☰</button>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Canonical Navigation (copy verbatim across all pages) -->
+  <nav class="app-nav">
+    <div class="container inner">
+      <div class="brand">System Design (Beginner)</div>
+      <button class="toggle js-nav-toggle" aria-expanded="false" aria-controls="site-menu" aria-label="Toggle menu">☰ Menu</button>
+      <div id="site-menu" class="menu" role="navigation" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="chapters/ch01.html">Chapters</a>
+        <a href="chapters/appendix.html">Appendix</a>
+        <a href="chapters/glossary.html">Glossary</a>
+      </div>
+    </div>
   </nav>
 
-  <main>
-    <header class="page-hero">
-      <p class="badge" style="color:var(--muted);letter-spacing:.08em;">CHAPTER 8</p>
+  <header class="page-hero" id="top">
+    <div class="container">
+      <div class="meta">
+        <span class="badge badge-primary">Chapter 8</span>
+        <span class="badge">Wrap-up</span>
+      </div>
       <h1>Pitfalls, Review &amp; Next Steps</h1>
-      <p style="max-width:72ch;margin-top:.5rem">
-        System design mastery is less about memorizing diagrams and more about avoiding **common traps**.  
-        This chapter summarizes frequent beginner pitfalls, reviews vocabulary and patterns, and helps you plan the journey from **beginner → intermediate**.
-      </p>
-    </header>
+      <p class="abstract">This chapter distills the most common beginner mistakes, revisits essential <abbr title="Non-functional measures like latency, throughput, availability, durability">goals and metrics</abbr>, and lays out a practical roadmap from <strong>beginner</strong> to <strong>intermediate</strong>. You’ll finish by planning extensions to your capstone and writing a reflection to solidify your mental models.</p>
+    </div>
+  </header>
 
-    <section aria-labelledby="s81">
-      <h2 id="s81">8.1 Common Pitfalls</h2>
-      <ul class="resource-list">
-        <li><strong>Over-engineering:</strong> Adding <a href="chapters/glossary.html#microservices">microservices</a>, queues, and caches before validating requirements. <em>Fix:</em> Start with simple monolith + DB.</li>
-        <li><strong>Ignoring requirements:</strong> Jumping into diagrams without clarifying functional vs. non-functional needs. <em>Fix:</em> Write down top-3 constraints first.</li>
-        <li><strong>Neglecting trade-offs:</strong> Presenting “perfect” designs. <em>Fix:</em> Always mention what you did NOT choose and why.</li>
-        <li><strong>Forgetting failures:</strong> Assuming dependencies are always up. <em>Fix:</em> Add at least one redundancy/failover per critical component.</li>
-        <li><strong>Vague vocabulary:</strong> Using “fast” or “scalable” without numbers. <em>Fix:</em> Attach metrics: “p95 latency &lt; 100&nbsp;ms”.</li>
-      </ul>
-      <div class="callout danger"><strong>Trade-off:</strong> Simplicity vs. future-proofing. Too simple → rewrite soon; too complex → slow, costly. The skill is choosing the right <em>level</em> for the problem.</div>
-    </section>
+  <main id="main" class="container section">
+    <section class="section" aria-labelledby="pitfalls">
+      <h2 id="pitfalls">8.1 Common Pitfalls (and how to avoid them)</h2>
 
-    <section aria-labelledby="s82">
-      <h2 id="s82">8.2 Review of Key Vocabulary &amp; Patterns</h2>
-      <p>
-        Let’s recap the <strong>8–10 most important terms</strong> you should be able to explain to a peer:
-      </p>
-      <ol class="resource-list">
-        <li><strong><a href="chapters/glossary.html#latency">Latency</a>:</strong> Delay per request; users feel it directly.</li>
-        <li><strong><a href="chapters/glossary.html#throughput">Throughput</a>:</strong> Requests/second; capacity measure.</li>
-        <li><strong><a href="chapters/glossary.html#cache">Cache</a>:</strong> Store hot data closer; trade-off = invalidation.</li>
-        <li><strong><a href="chapters/glossary.html#sql">SQL</a> vs. <a href="chapters/glossary.html#nosql">NoSQL</a>:</strong> Strong schema vs. flexible, consistent vs. eventual consistency.</li>
-        <li><strong><a href="chapters/glossary.html#load-balancer">Load balancer</a>:</strong> Spreads load, improves availability.</li>
-        <li><strong><a href="chapters/glossary.html#stateless">Stateless</a> vs. <a href="chapters/glossary.html#stateful">Stateful</a>:</strong> Impacts scaling ease.</li>
-        <li><strong><a href="chapters/glossary.html#replication">Replication</a> &amp; <a href="chapters/glossary.html#redundancy">redundancy</a>:</strong> Multiple copies for resilience.</li>
-        <li><strong><a href="chapters/glossary.html#slo">SLO</a> &amp; <a href="chapters/glossary.html#sli">SLI</a>:</strong> Targets and measurements for reliability.</li>
+      <figure>
+        <img src="assets/pitfalls-top10.svg" alt="Top 10 system design pitfalls arranged in a circle: over-engineering, ignoring requirements, no numbers, misusing caches, premature microservices, ignoring data model, no fault plan, weak observability, unclear consistency, and hand-wavy capacity" />
+        <figcaption>Top 10 pitfalls for beginners. Treat them as a checklist during interviews and design docs.</figcaption>
+      </figure>
+
+      <ol>
+        <li><strong>Over-engineering.</strong> Proposing a microservices zoo for a tiny scope. <em>Fix:</em> Start simple (monolith + cache), evolve when metrics demand it.</li>
+        <li><strong>Ignoring requirements.</strong> Jumping to tech before clarifying <em>functional</em> and <em>non-functional</em> needs. <em>Fix:</em> Spend 3–5 minutes eliciting constraints (p95 latency, expected <abbr title="Requests per second">RPS</abbr>, data retention).</li>
+        <li><strong>No numbers.</strong> Hand-wavy capacity causes brittle choices. <em>Fix:</em> Estimate payload sizes, traffic, and storage/day; show a back-of-envelope.</li>
+        <li><strong>Misusing caches.</strong> Caching writes or personal data without keys/TTL strategy. <em>Fix:</em> Cache read-hot, non-personalized paths; add <abbr title="Time To Live">TTL</abbr> + jitter and explicit busting.</li>
+        <li><strong>Premature microservices.</strong> Splitting too early increases <abbr title="Operational effort to deploy, monitor, and debug">operational complexity</abbr>. <em>Fix:</em> Extract only when bounded contexts and ownership warrant it.</li>
+        <li><strong>Ignoring the data model.</strong> API-first without schemas/indexes leads to slow queries. <em>Fix:</em> Define top queries, then design keys and <abbr title="Data structures that speed up lookup/sorting">indexes</abbr>.</li>
+        <li><strong>No fault plan.</strong> Assuming dependencies always work. <em>Fix:</em> Add <abbr title="Upper bound on how long a request waits">timeouts</abbr>, retries with backoff, <abbr title="Stops calls to unhealthy services to prevent cascades">circuit breakers</abbr>, and graceful degradation.</li>
+        <li><strong>Weak observability.</strong> No <abbr title="Service Level Indicators/Objectives">SLIs/SLOs</abbr>, logs, or traces. <em>Fix:</em> Define golden signals; add correlation/request ids and dashboards.</li>
+        <li><strong>Unclear consistency.</strong> Promising strong consistency everywhere. <em>Fix:</em> Label which reads are <em>strong</em> vs. <em>eventual</em>; add <abbr title="Guarantee a user sees their own writes">read-your-writes</abbr> where needed.</li>
+        <li><strong>Hand-wavy capacity.</strong> “We’ll autoscale.” <em>Fix:</em> Show a simple formula and headroom plan; tie autoscaling to p95 latency and queue depth.</li>
       </ol>
-      <div class="callout success"><strong>Mini Case Study:</strong> A junior engineer interviewing for a backend role nailed vocabulary—latency, throughput, SLOs—but couldn’t show trade-offs. The interviewer advised: “Words show you studied; trade-offs show you practiced.” She re-did designs, always naming 1–2 things she’d cut. Within months, her answers were stronger and she landed offers.</div>
+
+      <div class="callout warn">
+        <span class="icon">⚖️</span>
+        <strong>Trade-off reminder:</strong> Every improvement (e.g., stronger consistency) costs performance or complexity. Name the trade-off and why it’s acceptable for the use case.
+      </div>
     </section>
 
-    <section aria-labelledby="s83">
-      <h2 id="s83">8.3 Transition Path: Beginner → Intermediate</h2>
-      <p>
-        Intermediate designers tackle **medium-scale systems**: chat apps, feeds, payment services. They master **patterns** like <a href="chapters/glossary.html#sharding">sharding</a>, <a href="chapters/glossary.html#eventual-consistency">eventual consistency</a>, and <a href="chapters/glossary.html#queue">queues</a>.
-      </p>
-      <ul class="resource-list">
-        <li>Build 2–3 more designs (messaging, news feed, e-commerce cart).</li>
-        <li>Read <em>Designing Data-Intensive Applications</em> (Kleppmann).</li>
-        <li>Practice scaling one system 10×: re-estimate, redraw, add new trade-offs.</li>
-        <li>Introduce <strong>cost-awareness</strong>: compare solutions by $$$ at scale.</li>
-      </ul>
-      <div class="callout info"><strong>Analogy:</strong> Beginner = driving in a parking lot. Intermediate = navigating a city with traffic. You know the controls; now you must plan routes under constraints.</div>
+    <section class="section" aria-labelledby="review">
+      <h2 id="review">8.2 Review of Key Vocabulary &amp; Patterns</h2>
+
+      <figure>
+        <img src="assets/review-map.svg" alt="Concept map linking latency↔throughput, availability↔durability, scale up↔scale out, REST↔RPC↔WebSockets, SQL↔NoSQL, caching layers, replication and consistency" />
+        <figcaption>Concept map: connect terms to their sibling concepts and tensions; knowing the pairs helps you reason about trade-offs on the fly.</figcaption>
+      </figure>
+
+      <div class="grid two">
+        <div>
+          <h3 class="mt-0">Vocabulary (plain → formal → pitfall → example)</h3>
+          <dl>
+            <dt><strong>Latency</strong></dt>
+            <dd><em>Plain:</em> Time to get a reply. <em>Formal:</em> End-to-end delay (p50/p95). <em>Pitfall:</em> Citing averages only. <em>Example:</em> p95 login &lt; 300 ms.</dd>
+
+            <dt><strong>Throughput</strong></dt>
+            <dd><em>Plain:</em> Work per second. <em>Formal:</em> Completed requests/time. <em>Pitfall:</em> Ignoring tail latency under higher throughput. <em>Example:</em> 1500 RPS per replica.</dd>
+
+            <dt><strong>Availability</strong></dt>
+            <dd><em>Plain:</em> Chance it’s up. <em>Formal:</em> Fraction of time meeting SLO. <em>Pitfall:</em> Confusing with durability. <em>Example:</em> 99.9% monthly.</dd>
+
+            <dt><strong>Durability</strong></dt>
+            <dd><em>Plain:</em> Data won’t vanish. <em>Formal:</em> Probability of data survival over time. <em>Pitfall:</em> Backups untested. <em>Example:</em> Daily restore drills.</dd>
+
+            <dt><strong>Idempotency</strong></dt>
+            <dd><em>Plain:</em> Safe to retry. <em>Formal:</em> Repeat execution yields equivalent state. <em>Pitfall:</em> Missing request ids. <em>Example:</em> <code>Idempotency-Key</code> on POST.</dd>
+          </dl>
+        </div>
+        <div>
+          <h3 class="mt-0">Patterns to Recognize</h3>
+          <ul>
+            <li><strong>Cache-aside</strong> with TTL + jitter; <strong>write-through</strong>, <strong>write-back</strong> and when to use each.</li>
+            <li><strong>Leader–follower replication</strong> vs. <strong>leaderless quorums</strong>; how <em>lag</em> affects read freshness.</li>
+            <li><strong>Load balancing</strong> (round robin, least connections, consistent hashing) and health checks.</li>
+            <li><strong>Async workflows</strong> with queues and <abbr title="Dead Letter Queue for failed messages">DLQs</abbr> for resilience.</li>
+            <li><strong>Observability</strong>: metrics (SLIs), structured logs, distributed tracing.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <strong>Analogy:</strong> Treat concepts as paired weights on a barbell: latency ↔ throughput, availability ↔ cost, consistency ↔ performance. Lifting one side lowers the other—so balance for your use case.
+      </div>
     </section>
 
-    <section aria-labelledby="s84">
-      <h2 id="s84">8.4 Suggested Project Extensions</h2>
-      <p>
-        Extend your capstone (TinyURL or chat app) with one of these:
-      </p>
-      <ul class="resource-list">
-        <li><strong>Analytics:</strong> Add daily click dashboards (batch processing).</li>
-        <li><strong>Abuse detection:</strong> Add rate limiting and basic heuristics.</li>
-        <li><strong>Multi-region:</strong> Add a passive region with DNS failover.</li>
-        <li><strong>Mobile API:</strong> Add token-based auth and pagination.</li>
-      </ul>
-      <p>
-        Each forces new trade-offs: storage schema changes, cache invalidation, replication lag, and auth flows.
-      </p>
+    <section class="section" aria-labelledby="transition">
+      <h2 id="transition">8.3 Transition Path: Beginner → Intermediate</h2>
+
+      <figure>
+        <img src="assets/roadmap-beginner-to-intermediate.svg" alt="Roadmap with milestones: vocabulary, small designs, load tests → data modeling depth → reliability (SLOs) → distributed patterns → medium-scale projects" />
+        <figcaption>Progression roadmap: stack skills in layers and reinforce with targeted projects and reviews.</figcaption>
+      </figure>
+
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">Milestones</h3>
+          <ol>
+            <li><strong>Fluent vocabulary.</strong> Accurately use latency, throughput, availability, durability, consistency.</li>
+            <li><strong>Small designs.</strong> Produce 15-minute HLDs for URL shortener, chat, and a read-heavy API.</li>
+            <li><strong>Data modeling depth.</strong> Normalize vs. denormalize; choose indexes; design for queries.</li>
+            <li><strong>Reliability basics.</strong> Set SLIs/SLOs; instrument logs/metrics/traces; practice incident write-ups.</li>
+            <li><strong>Distributed patterns.</strong> Queues, idempotency, backoff, circuit breakers, bulkheads.</li>
+            <li><strong>Medium-scale project.</strong> Messaging app or news feed with caching, sharding, and DR plan.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3 class="mt-0">Projects to Level Up</h3>
+          <ul>
+            <li><strong>Tiny Feed:</strong> Write fan-out vs. read fan-in; cache materialized timelines.</li>
+            <li><strong>Search-lite:</strong> Build an inverted index; compare SQL LIKE vs. full-text.</li>
+            <li><strong>Image pipeline:</strong> Async resize with queues; CDN + versioned keys.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Trade-off lab:</strong> For each project, write 3–5 explicit trade-offs (e.g., eventual consistency for feeds) and why they’re acceptable. Revisit if assumptions change.
+      </div>
     </section>
 
-    <section aria-labelledby="resources">
-      <h2 id="resources">Resources</h2>
-      <ul class="resource-list">
-        <li><em>Designing Data-Intensive Applications</em> (Martin Kleppmann) — gold standard for deeper learning.</li>
-        <li>interviewing.io — free mock system design interviews.</li>
-        <li>Continue with case studies in the System Design Primer.</li>
-      </ul>
+    <section class="section" aria-labelledby="extensions">
+      <h2 id="extensions">8.4 Suggested Project Extensions</h2>
+      <p>Extend your Chapter 7 capstone to exercise new muscles:</p>
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">URL Shortener</h3>
+          <ul>
+            <li>Add <strong>custom domains</strong> and <abbr title="Domain-based routing at the edge">edge routing</abbr>.</li>
+            <li>Implement <strong>abuse detection</strong> (rate limits, blocklists, malware scans).</li>
+            <li>Move analytics to an <abbr title="Online Analytical Processing (columnar storage) for aggregations">OLAP</abbr> store via <abbr title="Change Data Capture">CDC</abbr>.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="mt-0">Chat App</h3>
+          <ul>
+            <li>Add <strong>presence</strong> and <strong>typing</strong> indicators via pub/sub.</li>
+            <li>Introduce <abbr title="Backpressure protects servers from overload">backpressure</abbr> and per-connection quotas.</li>
+            <li>Persist streams with <abbr title="Append-only logs used for durable event storage">commit logs</abbr>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <figure>
+        <img src="assets/extension-ideas.svg" alt="Grid of extension ideas: custom domains, abuse detection, presence, backpressure, OLAP analytics" />
+        <figcaption>Pick one extension per week; ship end-to-end with tests, metrics, and a brief design doc.</figcaption>
+      </figure>
     </section>
 
-    <section aria-labelledby="practice">
-      <h2 id="practice">Practice</h2>
-      <ol class="practice">
-        <li><strong>Design review (30–40 min):</strong> Pick your TinyURL design. Identify 2–3 mistakes (e.g., TTL mis-match, missing abuse checks). <em>Success:</em> Each mistake mapped to a fix.</li>
-        <li><strong>Glossary drill (20–25 min):</strong> Write definitions + micro-examples for 10 terms. <em>Success:</em> Each plain + formal + example.</li>
-        <li><strong>Intermediate sketch (40–60 min):</strong> Draft design for a messaging app. <em>Success:</em> Must include sharding, eventual consistency, and scaling strategy.</li>
+    <section class="section practice" aria-labelledby="practice">
+      <div class="title">Practice <span class="badge">30–60 min</span></div>
+      <h2 id="practice" class="mt-1">Hands-on Tasks</h2>
+      <ol>
+        <li><strong>Pitfall audit (10–15 min).</strong> Re-read your capstone and mark where each top-10 pitfall could apply. <em>Success:</em> At least three concrete fixes (e.g., add TTL jitter; specify p95 goals).</li>
+        <li><strong>Vocabulary speed round (10–15 min).</strong> Write one plain + formal definition and an example for 10 terms: latency, throughput, availability, durability, consistency, idempotency, SLO, TTL, replica, backpressure. <em>Success:</em> Each term has a crisp example relevant to your design.</li>
+        <li><strong>Roadmap step (10–20 min).</strong> Choose one “level-up” project and draft a one-page plan (requirements, data model, cache strategy, SLOs). <em>Success:</em> Includes a small capacity estimate and two trade-offs.</li>
+        <li><strong>Reflection (optional, 10–15 min).</strong> Write a one-page reflection on how your system design thinking evolved (see prompt below). <em>Success:</em> Mentions at least two changed assumptions or habits.</li>
       </ol>
     </section>
 
-    <section aria-labelledby="mastery">
-      <h2 id="mastery">Mastery Check</h2>
-      <ol class="mastery">
-        <li><strong>Define:</strong> What is over-engineering?
-          <details><summary>Sample answer</summary><p>Adding unnecessary complexity (microservices, queues) before requirements justify them.</p></details>
-        </li>
-        <li><strong>Explain:</strong> Why write requirements first?
-          <details><summary>Sample answer</summary><p>They anchor trade-offs. Without them you design in a vacuum and risk missing critical goals.</p></details>
-        </li>
-        <li><strong>Apply:</strong> You must scale TinyURL 10×. What’s your first step?
-          <details><summary>Sample answer</summary><p>Re-estimate traffic/storage; check if CDN caching suffices; only then add DB sharding or async pipelines.</p></details>
-        </li>
-        <li><strong>Evaluate:</strong> Vocabulary vs. trade-offs — which signals maturity?
-          <details><summary>Sample answer</summary><p>Vocabulary shows knowledge; trade-offs show reasoning. The latter is more important in interviews and real design.</p></details>
-        </li>
-        <li><strong>Apply:</strong> You designed with no failover. DB dies. What happens?
-          <details><summary>Sample answer</summary><p>Outage until manual fix. With replication/failover you’d redirect traffic automatically, minimizing downtime.</p></details>
-        </li>
-      </ol>
+    <section class="section mastery" aria-labelledby="mastery">
+      <div class="title">Mastery Check <span class="badge">Self-assessment</span></div>
+      <h2 id="mastery" class="mt-1">Questions (with sample answers)</h2>
+
+      <details>
+        <summary>1) Why is “start simple” often the best initial design choice?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> Simple designs ship faster, are easier to operate, and create a baseline for measurement. You can add complexity (sharding, streams) when metrics prove the need.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>2) Give a concrete example where eventual consistency is acceptable.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> “Likes” count on a post can lag a few seconds; users care more about responsiveness than perfectly up-to-the-millisecond accuracy.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>3) How do you prevent cache stampedes?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> TTL jitter, request coalescing, soft TTL to serve slightly stale while refreshing, and pre-warming hot keys.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>4) What’s your quick capacity formula and why keep headroom?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> <code>replicas ≈ ceil(peak_RPS / (RPS_per_replica × headroom))</code>. Headroom (0.6–0.7) absorbs variance and failures without violating SLOs.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>5) Describe a graceful degradation for your capstone.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> If analytics queue is down, the shortener still redirects but drops analytics with a buffer; alerts fire but user experience is preserved.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>6) Why define SLIs/SLOs before choosing tools?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> SLIs/SLOs anchor decisions and keep you honest; tools are means to meet goals, not the goals themselves.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>7) Name a pitfall you’re most prone to and how you’ll counter it.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> I overuse caches. I’ll first fix data modeling and indexing, then add a short-TTL cache with explicit busting, and measure hit rate vs. DB load.</p>
+        </div>
+      </details>
     </section>
 
-    <section aria-labelledby="recap">
+    <section class="section" aria-labelledby="reflection">
+      <h2 id="reflection">Reflection Prompt</h2>
+      <p>Write a one-page reflection: <em>“How has my system design thinking changed?”</em> Address:</p>
+      <ul>
+        <li>Two assumptions you held that turned out false.</li>
+        <li>One trade-off you now make differently (and why).</li>
+        <li>How you’ll measure success in future designs (SLIs/SLOs, capacity math).</li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="recap">
       <h2 id="recap">Recap &amp; Next Steps</h2>
-      <p>
-        You’ve completed the beginner curriculum. You can discuss small systems, identify scalability and reliability levers, and avoid classic pitfalls.  
-        Your next step: design medium-scale systems, incorporate advanced patterns, and study real-world case studies.  
-        Keep practicing trade-offs — that’s the heart of system design.
-      </p>
+      <p><strong>Recap:</strong> You cataloged common pitfalls, reconnected vocabulary to patterns, and built a roadmap to the intermediate level. You also planned concrete extensions and captured your personal learning in a reflection.</p>
+      <p><strong>Next:</strong> Head to the <a href="chapters/appendix.html">Appendix</a> for a consolidated pitfall checklist, review drills, and a progression tracker to guide your next 4–6 weeks.</p>
     </section>
 
-    <nav class="next-prev" aria-label="Chapter pagination">
-      <a rel="prev" href="chapters/ch07.html" aria-label="Previous: Chapter 7">← Prev</a>
-      <a rel="next" href="chapters/appendix.html" aria-label="Next: Appendix">Next →</a>
+    <nav class="next-prev" aria-label="Chapter pager">
+      <a rel="prev" href="chapters/ch07.html">Previous: Guided Practice — Designing a Simple System</a>
+      <a rel="next" href="chapters/appendix.html">Next: Appendix — Pitfalls, Review &amp; Progression</a>
     </nav>
-
-    <footer style="margin-top:2rem;color:var(--muted)">
-      <p>End of Chapter 8</p>
-    </footer>
   </main>
 
-  <!-- VALIDATION & MAPPING CHECKLIST
-  - [x] theme.css+app.js loaded
-  - [x] Canonical nav used verbatim; active link correct
-  - [x] Pager correct (prev=ch07, next=appendix)
-  - [x] ToC order matches file numbering
-  - [x] Sections present (objectives/resources/practice/mastery) and meet minimums
-  - [x] Glossary links valid
-  - [x] Head/meta ok
-  - [x] No TODOs
-  -- Depth quick checks --
-  - [x] Chapter word count ≥ 1,200
-  - [x] ≥ 2 examples, ≥ 1 case study, ≥ 1 compare/contrast, ≥ 1 analogy
-  - [x] Practice: 3–5 tasks with criteria
-  - [x] Mastery: 5–7 Qs with <details> answers
-  - [x] ≥ 8 glossary terms introduced; ≥ 1 figure with caption
+  <footer class="site-footer">
+    <div class="container">
+      <p class="mb-0">© 2025 System Design (Beginner). Chapter 8.</p>
+    </div>
+  </footer>
+
+  <!--
+  CHECKLIST (do not remove)
+  - [x] /styles/theme.css + /scripts/app.js linked (paths correct for /chapters/)
+  - [x] <base href="../"> present & correct
+  - [x] Canonical nav verbatim; active link via app.js
+  - [x] Pager prev=ch07, next=appendix.html (appendix follows last chapter)
+  - [x] Sections meet depth: pitfalls, review, transition path, extensions
+  - [x] Practice (3–4 tasks) with time + success criteria
+  - [x] Mastery (6–7 Qs) with sample answers
+  - [x] ≥3 figures: pitfalls-top10.svg, review-map.svg, roadmap-beginner-to-intermediate.svg, extension-ideas.svg under /assets
+  - [x] ≥8 glossary-style terms via <abbr> (RPS, TTL, SLI/SLO, idempotency, availability, durability, consistency, backpressure, circuit breaker)
+  - [x] Recap + Next steps
   -->
 </body>
 </html>

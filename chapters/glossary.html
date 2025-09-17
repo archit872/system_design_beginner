@@ -1,160 +1,165 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <base href="../"> 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
   <title>Glossary — System Design (Beginner)</title>
-  <meta name="description" content="Key vocabulary definitions for system design beginners: plain-language explanations, formal notes, and one-sentence examples." />
-  <meta property="og:title" content="Glossary — System Design (Beginner)" />
-  <meta property="og:description" content="Accessible explanations of common system design terms with examples to reinforce learning." />
-  <link rel="stylesheet" href="styles/theme.css" />
-  <script defer src="scripts/app.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Alphabetical glossary of core system design terms with plain and formal definitions plus concrete examples.">
+  <meta property="og:title" content="Glossary — System Design (Beginner)">
+  <meta property="og:description" content="Clear, example-driven definitions of the terms used throughout this book.">
+  <base href="../">
+  <link rel="stylesheet" href="styles/theme.css">
+  <script src="scripts/app.js" defer></script>
 </head>
 <body>
-  <!-- Canonical Navigation -->
-  <nav class="app-nav" aria-label="Primary">
-    <a href="index.html">Home</a>
-    <a href="chapters/ch01.html">Chapter 1</a>
-    <a href="chapters/ch02.html">Chapter 2</a>
-    <a href="chapters/ch03.html">Chapter 3</a>
-    <a href="chapters/ch04.html">Chapter 4</a>
-    <a href="chapters/ch05.html">Chapter 5</a>
-    <a href="chapters/ch06.html">Chapter 6</a>
-    <a href="chapters/ch07.html">Chapter 7</a>
-    <a href="chapters/ch08.html">Chapter 8</a>
-    <a href="chapters/appendix.html">Appendix</a>
-    <a href="chapters/glossary.html" aria-current="page">Glossary</a>
-    <button class="nav-toggle" aria-label="Toggle menu" style="margin-left:auto">☰</button>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Canonical Navigation (copy verbatim across all pages) -->
+  <nav class="app-nav">
+    <div class="container inner">
+      <div class="brand">System Design (Beginner)</div>
+      <button class="toggle js-nav-toggle" aria-expanded="false" aria-controls="site-menu" aria-label="Toggle menu">☰ Menu</button>
+      <div id="site-menu" class="menu" role="navigation" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="chapters/ch01.html">Chapters</a>
+        <a href="chapters/appendix.html">Appendix</a>
+        <a href="chapters/glossary.html" aria-current="page">Glossary</a>
+      </div>
+    </div>
   </nav>
 
-  <main>
-    <header class="page-hero">
-      <p class="badge" style="color:var(--muted);letter-spacing:.08em;">REFERENCE</p>
+  <header class="page-hero" id="top">
+    <div class="container">
+      <div class="meta">
+        <span class="badge badge-primary">Reference</span>
+        <span class="badge">Glossary</span>
+      </div>
       <h1>Glossary</h1>
-      <p style="max-width:72ch;margin-top:.5rem">
-        A quick reference for **system design vocabulary**. Each entry has a plain definition, a formal note, and a one-sentence example.
-      </p>
-    </header>
+      <p class="abstract">Each entry lists a <strong>plain</strong> definition, a <strong>formal</strong> definition, a common <strong>pitfall</strong>, and a short <strong>example</strong>.</p>
+    </div>
+  </header>
 
-    <section aria-labelledby="glossary-a">
-      <h2 id="glossary-a">A–C</h2>
-      <dl>
-        <dt id="api"><strong>API</strong> (Application Programming Interface)</dt>
-        <dd><em>Plain:</em> A set of rules for how software pieces talk. <em>Formal:</em> Defined request/response contract between components. <em>Example:</em> The Twitter API lets you fetch tweets with `GET /tweets`.</dd>
+  <main id="main" class="container section">
+    <section class="section" aria-labelledby="a">
+      <h2 id="a">A</h2>
+      <dl class="glossary">
+        <dt><strong>API</strong></dt>
+        <dd><em>Plain:</em> How programs talk. <em>Formal:</em> A contract (endpoints/messages) between components over a protocol. <em>Pitfall:</em> Designing APIs without error handling or versioning. <em>Example:</em> <code>POST /links</code> returns 201 with a short code.</dd>
 
-        <dt id="availability"><strong>Availability</strong></dt>
-        <dd><em>Plain:</em> How often the system is up. <em>Formal:</em> Percentage of time a system meets service goals (often “nines”). <em>Example:</em> 99.9% availability ≈ 8h downtime/year.</dd>
-
-        <dt id="backup"><strong>Backup</strong></dt>
-        <dd><em>Plain:</em> Copy of data for recovery. <em>Formal:</em> Stored snapshot for disaster recovery or corruption rollback. <em>Example:</em> Daily S3 snapshots of a DB.</dd>
-
-        <dt id="bottleneck"><strong>Bottleneck</strong></dt>
-        <dd><em>Plain:</em> Slowest part that limits performance. <em>Formal:</em> Component with least capacity relative to demand. <em>Example:</em> DB write lock slows checkout throughput.</dd>
-
-        <dt id="cache"><strong>Cache</strong></dt>
-        <dd><em>Plain:</em> Fast storage for hot data. <em>Formal:</em> Memory layer reducing latency/cost at expense of consistency. <em>Example:</em> Redis stores recent timeline queries.</dd>
-
-        <dt id="circuit-breaker"><strong>Circuit breaker</strong></dt>
-        <dd><em>Plain:</em> Switch to cut traffic to a failing service. <em>Formal:</em> Pattern that halts calls to unhealthy dependency and returns fallback. <em>Example:</em> Disable recommendations API when it times out repeatedly.</dd>
+        <dt><strong>Availability</strong></dt>
+        <dd><em>Plain:</em> Chance the service is up. <em>Formal:</em> Fraction of requests within SLO over time. <em>Pitfall:</em> Confusing with durability. <em>Example:</em> 99.9% monthly availability target.</dd>
       </dl>
     </section>
 
-    <section aria-labelledby="glossary-d">
-      <h2 id="glossary-d">D–L</h2>
-      <dl>
-        <dt id="database"><strong>Database</strong></dt>
-        <dd><em>Plain:</em> Organized data store. <em>Formal:</em> Structured collection with query language, guarantees (ACID/eventual). <em>Example:</em> PostgreSQL stores user accounts.</dd>
+    <section class="section" aria-labelledby="b">
+      <h2 id="b">B</h2>
+      <dl class="glossary">
+        <dt><strong>Backpressure</strong></dt>
+        <dd><em>Plain:</em> Telling senders to slow down. <em>Formal:</em> Flow-control mechanisms that bound queue growth and resource use. <em>Pitfall:</em> Unlimited buffers. <em>Example:</em> WebSocket server caps messages/sec per connection.</dd>
 
-        <dt id="eventual-consistency"><strong>Eventual consistency</strong></dt>
-        <dd><em>Plain:</em> Data copies may differ briefly but converge. <em>Formal:</em> Guarantee that given no updates, all replicas converge to same value. <em>Example:</em> After a post, followers may see it seconds later.</dd>
-
-        <dt id="failover"><strong>Failover</strong></dt>
-        <dd><em>Plain:</em> Automatic switch to backup. <em>Formal:</em> Mechanism that reroutes requests when a component fails. <em>Example:</em> DB replica takes over if primary crashes.</dd>
-
-        <dt id="graceful-degradation"><strong>Graceful degradation</strong></dt>
-        <dd><em>Plain:</em> System still works partially when broken. <em>Formal:</em> Ability to maintain limited service under component failure. <em>Example:</em> Show cached feed if live updates fail.</dd>
-
-        <dt id="idempotency"><strong>Idempotency</strong></dt>
-        <dd><em>Plain:</em> Repeat request safely. <em>Formal:</em> Property where repeated operations yield same result. <em>Example:</em> Retrying payment POST doesn’t double charge.</dd>
-
-        <dt id="latency"><strong>Latency</strong></dt>
-        <dd><em>Plain:</em> Time delay per request. <em>Formal:</em> Duration from request to response, measured in ms. <em>Example:</em> Webpage loads in 120&nbsp;ms.</dd>
-
-        <dt id="load"><strong>Load</strong></dt>
-        <dd><em>Plain:</em> Amount of work hitting system. <em>Formal:</em> Incoming requests per second and resource demand. <em>Example:</em> Login endpoint at 500 RPS.</dd>
-
-        <dt id="load-balancer"><strong>Load balancer</strong></dt>
-        <dd><em>Plain:</em> Traffic cop for servers. <em>Formal:</em> Middleware distributing traffic among instances based on policy and health checks. <em>Example:</em> HAProxy spreads requests across 4 web servers.</dd>
+        <dt><strong>Bulkhead</strong></dt>
+        <dd><em>Plain:</em> Isolation wall. <em>Formal:</em> Resource isolation (pools/threads) to contain failures. <em>Pitfall:</em> One pool for all dependencies. <em>Example:</em> Separate DB and cache connection pools.</dd>
       </dl>
     </section>
 
-    <section aria-labelledby="glossary-m">
-      <h2 id="glossary-m">M–R</h2>
-      <dl>
-        <dt id="microservices"><strong>Microservices</strong></dt>
-        <dd><em>Plain:</em> Many small services instead of one app. <em>Formal:</em> Architectural style decomposing apps into loosely coupled services. <em>Example:</em> Auth, payments, and orders run separately.</dd>
+    <section class="section" aria-labelledby="c">
+      <h2 id="c">C</h2>
+      <dl class="glossary">
+        <dt><strong>Cache</strong></dt>
+        <dd><em>Plain:</em> Save work to reuse later. <em>Formal:</em> A faster tier storing results with defined freshness. <em>Pitfall:</em> No invalidation plan. <em>Example:</em> Redis cache-aside with 60 s TTL + jitter.</dd>
 
-        <dt id="monitoring"><strong>Monitoring</strong></dt>
-        <dd><em>Plain:</em> Watching system health. <em>Formal:</em> Continuous collection of metrics (latency, errors, saturation). <em>Example:</em> Grafana dashboard for API latency.</dd>
+        <dt><strong>CDN</strong></dt>
+        <dd><em>Plain:</em> Servers near users. <em>Formal:</em> Geo-distributed edge network that caches content and terminates TLS. <em>Pitfall:</em> Caching personalized pages. <em>Example:</em> Cache 301 redirects for hot short links.</dd>
 
-        <dt id="nosql"><strong>NoSQL</strong></dt>
-        <dd><em>Plain:</em> Non-relational database family. <em>Formal:</em> Key-value, document, wide-column, or graph DBs trading schema for flexibility. <em>Example:</em> MongoDB stores JSON documents.</dd>
+        <dt><strong>Circuit Breaker</strong></dt>
+        <dd><em>Plain:</em> Stop calling what’s failing. <em>Formal:</em> Control that opens on high error/latency, then probes recovery. <em>Example:</em> Pause calls to a slow dependency and serve fallbacks.</dd>
 
-        <dt id="queue"><strong>Queue</strong></dt>
-        <dd><em>Plain:</em> Line for tasks. <em>Formal:</em> Data structure/process holding tasks FIFO for async workers. <em>Example:</em> RabbitMQ stores image resize jobs.</dd>
-
-        <dt id="redundancy"><strong>Redundancy</strong></dt>
-        <dd><em>Plain:</em> Having spares. <em>Formal:</em> Extra components so one can fail without service loss. <em>Example:</em> Two app servers in different zones.</dd>
-
-        <dt id="replication"><strong>Replication</strong></dt>
-        <dd><em>Plain:</em> Copying data. <em>Formal:</em> Maintaining multiple synchronized instances of data for availability and scale. <em>Example:</em> Primary DB replicates to read replicas.</dd>
+        <dt><strong>Consistency</strong></dt>
+        <dd><em>Plain:</em> How fresh/ordered reads are. <em>Formal:</em> Guarantees on visibility of writes (strong, eventual, causal). <em>Pitfall:</em> Overpromising strong everywhere. <em>Example:</em> Eventual consistency for analytics counts.</dd>
       </dl>
     </section>
 
-    <section aria-labelledby="glossary-s">
-      <h2 id="glossary-s">S–Z</h2>
-      <dl>
-        <dt id="scalability"><strong>Scalability</strong></dt>
-        <dd><em>Plain:</em> Ability to handle more load. <em>Formal:</em> Property of a system to increase capacity while meeting SLOs. <em>Example:</em> Add servers behind LB to double throughput.</dd>
-
-        <dt id="sli"><strong>SLI</strong> (Service Level Indicator)</dt>
-        <dd><em>Plain:</em> Measurement of performance. <em>Formal:</em> Quantitative measure of service quality (latency, error rate). <em>Example:</em> 99% of logins under 200&nbsp;ms.</dd>
-
-        <dt id="slo"><strong>SLO</strong> (Service Level Objective)</dt>
-        <dd><em>Plain:</em> Target goal for reliability. <em>Formal:</em> Agreement on acceptable SLI thresholds. <em>Example:</em> 99.9% availability per quarter.</dd>
-
-        <dt id="sql"><strong>SQL</strong></dt>
-        <dd><em>Plain:</em> Relational database language. <em>Formal:</em> Structured Query Language used in relational DBs with ACID guarantees. <em>Example:</em> `SELECT * FROM users WHERE id=7`.</dd>
-
-        <dt id="stateful"><strong>Stateful</strong></dt>
-        <dd><em>Plain:</em> Keeps memory between requests. <em>Formal:</em> Service retains user/session state across calls. <em>Example:</em> Chat room server holding active participants in memory.</dd>
-
-        <dt id="stateless"><strong>Stateless</strong></dt>
-        <dd><em>Plain:</em> No memory between requests. <em>Formal:</em> Each request independent; any server can serve it. <em>Example:</em> Login API verifying JWT token per call.</dd>
-
-        <dt id="throughput"><strong>Throughput</strong></dt>
-        <dd><em>Plain:</em> How much work per time. <em>Formal:</em> Number of requests/transactions processed per second. <em>Example:</em> 5k RPS sustained on checkout.</dd>
+    <section class="section" aria-labelledby="d">
+      <h2 id="d">D</h2>
+      <dl class="glossary">
+        <dt><strong>Durability</strong></dt>
+        <dd><em>Plain:</em> Data won’t vanish. <em>Formal:</em> Probability stored data survives faults. <em>Pitfall:</em> Untested backups. <em>Example:</em> Nightly encrypted snapshots; monthly restore drills.</dd>
       </dl>
     </section>
 
-    <nav class="next-prev" aria-label="Chapter pagination">
-      <a rel="prev" href="chapters/appendix.html" aria-label="Previous: Appendix">← Prev</a>
+    <section class="section" aria-labelledby="i">
+      <h2 id="i">I</h2>
+      <dl class="glossary">
+        <dt><strong>Idempotency</strong></dt>
+        <dd><em>Plain:</em> Safe to retry. <em>Formal:</em> Replays yield equivalent state. <em>Pitfall:</em> Missing request IDs. <em>Example:</em> <code>Idempotency-Key</code> for POST to avoid duplicate links.</dd>
+
+        <dt><strong>Index</strong></dt>
+        <dd><em>Plain:</em> Fast lookup guide. <em>Formal:</em> Data structure (B-tree/hash) that accelerates filters/sorts. <em>Pitfall:</em> Non-sargable filters. <em>Example:</em> <code>messages(conversation_id, created_at DESC)</code>.</dd>
+      </dl>
+    </section>
+
+    <section class="section" aria-labelledby="l">
+      <h2 id="l">L</h2>
+      <dl class="glossary">
+        <dt><strong>Latency</strong></dt>
+        <dd><em>Plain:</em> Time to respond. <em>Formal:</em> End-to-end delay (p50/p95/p99). <em>Pitfall:</em> Reporting averages only. <em>Example:</em> p95 redirect &lt; 120 ms globally.</dd>
+
+        <dt><strong>Load Balancer</strong></dt>
+        <dd><em>Plain:</em> Traffic router. <em>Formal:</em> L4/L7 component that distributes requests across replicas. <em>Pitfall:</em> No health checks/draining. <em>Example:</em> Least-connections during flash sale.</dd>
+      </dl>
+    </section>
+
+    <section class="section" aria-labelledby="r">
+      <h2 id="r">R</h2>
+      <dl class="glossary">
+        <dt><strong>Rate Limiting</strong></dt>
+        <dd><em>Plain:</em> Caps on requests. <em>Formal:</em> Algorithms (token bucket/leaky bucket) to bound RPS. <em>Pitfall:</em> Global limits only. <em>Example:</em> Per-IP and per-key limits on <code>POST /links</code>.</dd>
+
+        <dt><strong>Replication</strong></dt>
+        <dd><em>Plain:</em> Extra copies. <em>Formal:</em> Leader–follower or quorum models for durability/availability. <em>Pitfall:</em> Ignoring lag. <em>Example:</em> Read-your-writes stickiness after user updates.</dd>
+
+        <dt><strong>RPO / RTO</strong></dt>
+        <dd><em>Plain:</em> Data loss / downtime budgets. <em>Formal:</em> Recovery Point/Time Objectives. <em>Pitfall:</em> Undefined targets. <em>Example:</em> RPO ≤ 1 min, RTO ≤ 30 min with warm standby.</dd>
+      </dl>
+    </section>
+
+    <section class="section" aria-labelledby="s">
+      <h2 id="s">S</h2>
+      <dl class="glossary">
+        <dt><strong>Scalability</strong></dt>
+        <dd><em>Plain:</em> Handle more work. <em>Formal:</em> Throughput increases with resources while meeting SLOs. <em>Pitfall:</em> Scale out without measuring bottlenecks. <em>Example:</em> Add replicas and a cache to keep p95 &lt; 300 ms.</dd>
+
+        <dt><strong>SLI / SLO</strong></dt>
+        <dd><em>Plain:</em> Metric / target. <em>Formal:</em> Indicators and objectives governing reliability. <em>Pitfall:</em> Alerting on internals only. <em>Example:</em> p95 &lt; 250 ms, 99.9% availability.</dd>
+      </dl>
+    </section>
+
+    <section class="section" aria-labelledby="t">
+      <h2 id="t">T</h2>
+      <dl class="glossary">
+        <dt><strong>Throughput</strong></dt>
+        <dd><em>Plain:</em> Work per second. <em>Formal:</em> Completed requests/time unit. <em>Pitfall:</em> Chasing RPS while p95 spikes. <em>Example:</em> 1.5k RPS/replica at 60% CPU.</dd>
+
+        <dt><strong>TTL</strong></dt>
+        <dd><em>Plain:</em> Expiration time. <em>Formal:</em> Maximum cache lifetime before refresh. <em>Pitfall:</em> Synchronized expiries. <em>Example:</em> 60–120 s TTL with ±20% jitter.</dd>
+      </dl>
+    </section>
+
+    <nav class="next-prev" aria-label="Chapter pager">
+      <a rel="prev" href="chapters/appendix.html">← Previous: Appendix — Pitfalls, Review &amp; Progression</a>
     </nav>
-
-    <footer style="margin-top:2rem;color:var(--muted)">
-      <p>End of Glossary</p>
-    </footer>
   </main>
 
-  <!-- VALIDATION & MAPPING CHECKLIST
-  - [x] theme.css+app.js loaded
-  - [x] Canonical nav used verbatim; active link correct
-  - [x] Pager correct (only prev=appendix)
-  - [x] ToC order matches file numbering
-  - [x] Glossary entries alphabetical; ≥ 20 terms
-  - [x] Head/meta ok
-  - [x] No TODOs
+  <footer class="site-footer">
+    <div class="container"><p class="mb-0">© 2025 System Design (Beginner). Glossary.</p></div>
+  </footer>
+
+  <!--
+  CHECKLIST
+  - [x] /styles/theme.css + /scripts/app.js linked (paths correct for /chapters/)
+  - [x] <base href="../"> present & correct
+  - [x] Canonical nav verbatim; aria-current on Glossary
+  - [x] Pager only has prev (Glossary is last)
   -->
 </body>
 </html>

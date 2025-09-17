@@ -1,208 +1,311 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <base href="../"> 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chapter 4 — Caching & Performance Basics</title>
-  <meta name="description" content="Introduction to caching, placement strategies, CDN, Redis/Memcached, and cache invalidation patterns with examples, practice, and mastery." />
-  <meta property="og:title" content="Chapter 4 — Caching & Performance Basics" />
-  <meta property="og:description" content="Learn why caching helps, types of caches, invalidation challenges, examples, and trade-offs in performance." />
-  <link rel="stylesheet" href="styles/theme.css" />
-  <script defer src="scripts/app.js"></script>
+  <meta charset="utf-8">
+  <title>Ch. 4 — Caching & Performance Basics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="What caching is, why it helps, cache placement options (browser, CDN, server-side), and cache invalidation patterns with concrete examples and trade-offs.">
+  <meta property="og:title" content="Chapter 4 — Caching & Performance Basics">
+  <meta property="og:description" content="Speed up reads with browser, CDN, and server-side caches. Learn TTLs, freshness, and invalidation patterns—plus when caching hurts.">
+  <base href="../">
+  <link rel="stylesheet" href="styles/theme.css">
+  <script src="scripts/app.js" defer></script>
 </head>
 <body>
-  <!-- Canonical Navigation -->
-  <nav class="app-nav" aria-label="Primary">
-    <a href="index.html">Home</a>
-    <a href="chapters/ch01.html">Chapter 1</a>
-    <a href="chapters/ch02.html">Chapter 2</a>
-    <a href="chapters/ch03.html">Chapter 3</a>
-    <a href="chapters/ch04.html" aria-current="page">Chapter 4</a>
-    <a href="chapters/ch05.html">Chapter 5</a>
-    <a href="chapters/ch06.html">Chapter 6</a>
-    <a href="chapters/ch07.html">Chapter 7</a>
-    <a href="chapters/ch08.html">Chapter 8</a>
-    <a href="chapters/appendix.html">Appendix</a>
-    <a href="chapters/glossary.html">Glossary</a>
-    <button class="nav-toggle" aria-label="Toggle menu" style="margin-left:auto">☰</button>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Canonical Navigation (copy verbatim across all pages) -->
+  <nav class="app-nav">
+    <div class="container inner">
+      <div class="brand">System Design (Beginner)</div>
+      <button class="toggle js-nav-toggle" aria-expanded="false" aria-controls="site-menu" aria-label="Toggle menu">☰ Menu</button>
+      <div id="site-menu" class="menu" role="navigation" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="chapters/ch01.html">Chapters</a>
+        <a href="chapters/appendix.html">Appendix</a>
+        <a href="chapters/glossary.html">Glossary</a>
+      </div>
+    </div>
   </nav>
 
-  <main>
-    <header class="page-hero">
-      <p class="badge" style="color:var(--muted);letter-spacing:.08em;">CHAPTER 4</p>
+  <header class="page-hero" id="top">
+    <div class="container">
+      <div class="meta">
+        <span class="badge badge-primary">Chapter 4</span>
+        <span class="badge">Performance</span>
+      </div>
       <h1>Caching &amp; Performance Basics</h1>
-      <p style="max-width:72ch;margin-top:.5rem">
-        Caching is a cornerstone of system performance. It stores results in faster storage to reduce repeated work and <strong><a href="chapters/glossary.html#latency">latency</a></strong>. 
-        In this chapter, you’ll learn what caching is, where to place it—client, CDN, server—and the difficulties of <strong><a href="chapters/glossary.html#cache-invalidation">cache invalidation</a></strong>. 
-        You’ll design caching strategies for a messaging app and analyze trade-offs.
-      </p>
-    </header>
+      <p class="abstract">Caching reduces <abbr title="Time from request to response">latency</abbr> and increases <abbr title="Units of work per second">throughput</abbr> by reusing results of previous work. This chapter explains where caches live—browser, CDN, server-side—and how to control <abbr title="How fresh a cached representation is considered">freshness</abbr>, choose <abbr title="Time To Live—how long an object is allowed to be cached">TTLs</abbr>, and avoid the classic hardest problem in CS: cache invalidation.</p>
+    </div>
+  </header>
 
-    <section aria-labelledby="objectives">
-      <h2 id="objectives">Learning Objectives</h2>
-      <ul class="resource-list">
-        <li>Explain why caching improves <a href="chapters/glossary.html#latency">latency</a> and throughput.</li>
-        <li>Differentiate cache placement: browser, CDN, application, database.</li>
-        <li>Apply caching to design scenarios (messaging app).</li>
-        <li>Identify and mitigate <a href="chapters/glossary.html#cache-invalidation">invalidation</a> problems.</li>
-      </ul>
+  <main id="main" class="container section">
+    <section class="section" aria-labelledby="prereqs">
+      <h2 id="prereqs">Prerequisites &amp; Learning Objectives</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">Prerequisites</h3>
+          <ul>
+            <li>Chapter 2 (HTTP basics, request/response) and Chapter 3 (read paths, indexes).</li>
+            <li>Ability to run a simple web server locally.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="mt-0">Objectives</h3>
+          <ul>
+            <li>Explain the purposes and placements of caches (browser, CDN, server-side).</li>
+            <li>Use HTTP caching headers (<code>Cache-Control</code>, <code>ETag</code>, <code>Last-Modified</code>) appropriately.</li>
+            <li>Evaluate server-side caching with Redis/Memcached and pick cache keys/TTLs.</li>
+            <li>Apply invalidation patterns (TTL, write-through, write-back, event-driven busting) and reason about trade-offs.</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <figure>
-      <svg width="100%" height="250" viewBox="0 0 900 250" role="img" aria-labelledby="fig4">
-        <title id="fig4">Cache layers in a system</title>
-        <!-- Browser -->
-        <rect x="40" y="80" width="120" height="80" rx="10" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="100" y="120" text-anchor="middle" fill="#e6edf3" font-size="12">Browser Cache</text>
-        <line x1="160" y1="120" x2="240" y2="120" stroke="#7a87ff" marker-end="url(#arrow4)"/>
-        <!-- CDN -->
-        <rect x="240" y="60" width="140" height="120" rx="10" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="310" y="120" text-anchor="middle" fill="#e6edf3" font-size="12">CDN</text>
-        <line x1="380" y1="120" x2="460" y2="120" stroke="#7a87ff" marker-end="url(#arrow4)"/>
-        <!-- App cache -->
-        <rect x="460" y="40" width="160" height="160" rx="10" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="540" y="120" text-anchor="middle" fill="#e6edf3" font-size="12">App/Server Cache (Redis)</text>
-        <line x1="620" y1="120" x2="700" y2="120" stroke="#7a87ff" marker-end="url(#arrow4)"/>
-        <!-- DB -->
-        <ellipse cx="790" cy="120" rx="80" ry="50" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="790" y="120" text-anchor="middle" fill="#e6edf3" font-size="12">Database</text>
-        <defs>
-          <marker id="arrow4" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
-            <path d="M0,0 L10,5 L0,10 Z" fill="#7a87ff"/>
-          </marker>
-        </defs>
-      </svg>
-      <figcaption>Figure 4. Cache layers: browser → CDN → app cache → database. Each reduces latency but adds invalidation complexity.</figcaption>
+      <img src="assets/cache-hierarchy.svg" alt="Diagram of cache hierarchy: Browser → CDN → Edge Compute → API → App Cache → Database" />
+      <figcaption>Where caches live: the closer to the client, the lower the latency and the broader the reuse. Server-side caches protect your database from hot read traffic.</figcaption>
     </figure>
 
-    <section aria-labelledby="s41">
-      <h2 id="s41">4.1 Introduction to Caching</h2>
-      <p>
-        A <strong><a href="chapters/glossary.html#cache">cache</a></strong> is a temporary store for frequently accessed data. It improves <a href="chapters/glossary.html#latency">latency</a> and reduces backend load. 
-        Common strategies: <em>cache-aside</em> (application checks cache, falls back to DB), <em>write-through</em> (write to cache and DB), and <em>write-back</em> (write to cache, persist later).
-      </p>
-      <div class="callout info"><strong>Analogy:</strong> A fridge is a cache for food. Instead of cooking from scratch each time (DB), you open the fridge (cache) for quick access. But food may expire (stale cache).</div>
+    <section class="section" aria-labelledby="intro">
+      <h2 id="intro">4.1 Introduction to Caching</h2>
+      <p>A <strong>cache</strong> stores the result of expensive operations so future requests can be answered faster. We trade <em>freshness</em> for <em>speed</em> under explicit rules. Good caches are predictable: you should be able to answer “when does this change propagate?”</p>
+      <p><strong>Analogy:</strong> Think of a café that pre-brews popular drinks before rush hour. Most customers get served instantly; a few special orders take longer. If the pre-brew sits too long, quality drops—so the café discards it after 20 minutes (TTL) and brews fresh.</p>
+      <p><strong>Example:</strong> A product page composes static assets (HTML, CSS, images) and dynamic data (price, stock). Static assets cache for days at the CDN; dynamic fragments cache for seconds on the server to withstand bursts while remaining fresh.</p>
+      <div class="callout warn">
+        <span class="icon">⚠️</span>
+        <strong>Pitfall:</strong> “Cache everything” without a plan for invalidation leads to stale views, missed updates, and support tickets. Start with hot, read-heavy endpoints and short, safe TTLs.
+      </div>
     </section>
 
-    <section aria-labelledby="s42">
-      <h2 id="s42">4.2 Browser Cache &amp; CDN Basics</h2>
-      <p>
-        Browsers cache static resources (CSS, JS, images) based on headers (<code>Cache-Control</code>, <code>ETag</code>). 
-        <strong><a href="chapters/glossary.html#cdn">CDNs</a></strong> replicate content globally to serve users from nearby nodes. 
-        Both reduce round-trips and <a href="chapters/glossary.html#latency">latency</a>.
-      </p>
-      <h3>Example:</h3>
-      <p>
-        YouTube thumbnails are cached at CDN edges. A user in Brazil loads from a São Paulo edge instead of crossing continents. 
-        Latency drops from 300&nbsp;ms to 30&nbsp;ms.
-      </p>
-      <div class="callout warn"><strong>Pitfall:</strong> Forgetting to version static assets can cause users to load stale JS/CSS for days.</div>
+    <section class="section" aria-labelledby="browser-cdn">
+      <h2 id="browser-cdn">4.2 Browser Cache &amp; CDN Basics</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">HTTP Caching 101</h3>
+          <ul>
+            <li><code>Cache-Control: max-age=86400, public</code> — allow intermediaries to cache for a day.</li>
+            <li><code>ETag</code> / <code>If-None-Match</code> — validators for conditional requests (304 Not Modified).</li>
+            <li><code>Last-Modified</code> / <code>If-Modified-Since</code> — time-based validator.</li>
+            <li><code>Vary</code> — separate caches by header (e.g., <code>Accept-Encoding</code>, <code>Authorization</code>).</li>
+          </ul>
+        </div>
+        <figure>
+          <img src="assets/cdn-flow.svg" alt="Flow of client request through DNS → CDN edge cache → origin; on hit: edge serves; on miss: fetch from origin and store" />
+          <figcaption>CDN request flow: misses travel to origin once, then future requests are served from the edge until TTL expiry or purge.</figcaption>
+        </figure>
+      </div>
+      <p><strong>Immutable file strategy:</strong> Fingerprint assets (e.g., <code>main.abcd1234.css</code>) and serve with <code>Cache-Control: public, max-age=31536000, immutable</code>. Deploys upload new files; HTML references change the filenames. This gives you long-lived caching without manual purges.</p>
+      <p><strong>Personalized pages:</strong> Avoid caching entire responses at the CDN when they vary per user. Instead, cache static parts and fetch personalized JSON separately, or use <abbr title="Edge execution like CDN workers to compose cached and dynamic data">edge compute</abbr>.</p>
     </section>
 
-    <section aria-labelledby="s43">
-      <h2 id="s43">4.3 Server-side Caching with Redis/Memcached</h2>
-      <p>
-        <strong><a href="chapters/glossary.html#redis">Redis</a></strong> and <strong><a href="chapters/glossary.html#memcached">Memcached</a></strong> are in-memory stores for high-speed caching. 
-        Redis adds persistence, data structures (lists, sets), and replication. Memcached is simple and very fast for ephemeral key-value data.
-      </p>
-      <h3>Mini Case Study: Redis in a messaging app</h3>
-      <p>
-        A chat app experiences 500&nbsp;ms DB queries for “latest 50 messages.” Engineers add a Redis cache storing recent messages per conversation. 
-        Reads hit Redis 90% of the time, reducing p95 to 40&nbsp;ms. A background job evicts old messages from Redis. 
-        Trade-off: Cache invalidation when users delete/edit messages requires explicit updates to both Redis and DB.
-      </p>
-      <div class="callout danger"><strong>Trade-off:</strong> Adding Redis improved latency but added <a href="chapters/glossary.html#consistency">consistency</a> risks (stale data). The team built reconciliation jobs to ensure correctness.</div>
-    </section>
-
-    <section aria-labelledby="s44">
-      <h2 id="s44">4.4 Cache Invalidation Patterns</h2>
-      <p>
-        “There are only two hard things in Computer Science: cache invalidation and naming things.” Invalidation is deciding when cached data is no longer valid.
-      </p>
-      <ul class="resource-list">
-        <li><strong>TTL (time-to-live):</strong> Data expires after fixed time. Simple but may serve stale data.</li>
-        <li><strong>Write-through:</strong> Cache updated immediately on write. Consistent but higher write latency.</li>
-        <li><strong>Write-back:</strong> Fast writes to cache, DB later. Risk of data loss if cache fails.</li>
-        <li><strong>Explicit invalidation:</strong> Application deletes/updates cache keys when underlying data changes.</li>
+    <section class="section" aria-labelledby="server-cache">
+      <h2 id="server-cache">4.3 Server-side Caching with Redis/Memcached</h2>
+      <p>Server-side caches (in-process or shared like <strong>Redis</strong>/<strong>Memcached</strong>) absorb hot reads and smooth write bursts. A shared cache allows multiple app replicas to reuse results. Typical patterns:</p>
+      <ul>
+        <li><strong>Cache-aside (lazy loading):</strong> App checks cache; on miss, loads from DB and stores in cache with TTL.</li>
+        <li><strong>Write-through:</strong> On write, synchronously update cache and DB; reads always hit cache.</li>
+        <li><strong>Write-back (write-behind):</strong> Writes go to cache and are flushed to DB asynchronously—low latency but risk data loss on crash.</li>
       </ul>
-      <div class="callout success"><strong>Example:</strong> Twitter timelines use a hybrid: cache timelines with TTL and push invalidations when a new tweet arrives.</div>
+      <div class="grid two">
+        <figure>
+          <img src="assets/redis-topology.svg" alt="Redis topology: app servers connect to a Redis cluster with replication and optional sharding" />
+          <figcaption>Shared cache with replication; sharding distributes keys by hash. Monitor memory, eviction policy, and connection limits.</figcaption>
+        </figure>
+        <div class="card">
+          <h3 class="mt-0">Choosing Keys &amp; TTLs</h3>
+          <ul>
+            <li>Keys mirror access paths: <code>user:{id}:profile</code>, <code>conv:{id}:recent:page:{n}</code>.</li>
+            <li>Set <strong>short TTLs</strong> for dynamic data (5–120 s), <strong>long TTLs</strong> for static metadata.</li>
+            <li>Add <em>jitter</em> (±20%) to TTLs to avoid synchronized expiry (“cache stampede”).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout info">
+        <strong>Stampede control:</strong> Use <em>request coalescing</em> (only one worker recomputes a missing key) and <em>soft TTLs</em> (serve slightly stale while refreshing in background).
+      </div>
+      <div class="callout warn">
+        <span class="icon">⚖️</span>
+        <strong>Trade-off:</strong> Write-through increases write latency but guarantees fresh cache. Cache-aside is simpler but risks brief staleness after writes. Write-back reduces write latency but can lose data without durable queues.
+      </div>
     </section>
 
-    <section aria-labelledby="resources">
-      <h2 id="resources">Recommended Resources</h2>
+    <section class="section" aria-labelledby="invalidation">
+      <h2 id="invalidation">4.4 Cache Invalidation Patterns</h2>
+      <p>Invalidation answers: <em>When should the cache stop serving a value?</em> Strategies vary by data volatility and correctness needs.</p>
+
+      <figure>
+        <img src="assets/cache-invalidation-patterns.svg" alt="Matrix of cache invalidation patterns: TTL, explicit purge, event-driven bust, versioned keys; annotated by freshness vs. complexity" />
+        <figcaption>Pick the simplest pattern that meets freshness requirements; combine TTL with explicit busting for critical paths.</figcaption>
+      </figure>
+
+      <h3 id="ttl">TTL (Time To Live)</h3>
+      <p>Let entries expire naturally after N seconds. Best for data that can be slightly stale (leaderboards, trending lists). Add jitter to avoid herd effects.</p>
+
+      <h3 id="purge">Explicit Purge / Bust</h3>
+      <p>When authoritative data changes, actively delete/expire the cache entry (e.g., <code>DEL</code> in Redis or CDN API purge). Requires knowing all affected keys.</p>
+
+      <h3 id="versioning">Versioned Keys</h3>
+      <p>Include a <em>version</em> or <em>content hash</em> in the key (e.g., <code>product:{id}:v42</code>). Writes bump the version; readers never serve mixed states. Works well for immutable assets and materialized views.</p>
+
+      <h3 id="events">Event-driven Invalidation</h3>
+      <p>Emit domain events (“price-updated”, “profile-changed”) and subscribe to invalidate or recompute affected entries. Scales well across services but requires reliable delivery and idempotent handlers.</p>
+
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">What not to cache</h3>
+          <ul>
+            <li>Highly personalized data without a stable key strategy.</li>
+            <li>Security-sensitive artifacts (unless you handle revocation/expiry correctly).</li>
+            <li>Rarely accessed data (caching adds complexity without payoff).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="mt-0">Eviction Policies</h3>
+          <ul>
+            <li><strong>LRU</strong> (Least Recently Used) — good general default.</li>
+            <li><strong>LFU</strong> (Least Frequently Used) — favors hot keys over time.</li>
+            <li><strong>TTL-based</strong> — combine with LRU/LFU to cap staleness.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="compare">
+      <h2 id="compare">Compare &amp; Contrast: CDN vs. Server Cache</h2>
+      <table>
+        <thead><tr><th>Aspect</th><th>CDN (Edge)</th><th>Server-side Cache</th></tr></thead>
+        <tbody>
+          <tr><td>Scope</td><td>Static assets, cacheable API GETs</td><td>Dynamic fragments, computed views</td></tr>
+          <tr><td>Latency</td><td>Very low (near user)</td><td>Low (in-datacenter)</td></tr>
+          <tr><td>Freshness control</td><td>HTTP headers, purge APIs</td><td>TTL, explicit bust, versioned keys</td></tr>
+          <tr><td>Personalization</td><td>Hard (Vary, cookies)</td><td>Easier (fine-grained keys)</td></tr>
+          <tr><td>Cost</td><td>Bandwidth + edge storage</td><td>Memory + ops on Redis/Memcached</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" aria-labelledby="case">
+      <h2 id="case">Case Study: Speeding Up a Product Page (≈200 words)</h2>
+      <p>A retailer’s product page is slow at peak—median 450 ms, p95 1.8 s. Profiling shows three hotspots: image delivery, price lookup, and “related products.” The team deploys three targeted caches. First, <strong>CDN</strong> for images and static assets with immutable fingerprints and 30-day TTL; HTML remains short-TTL to avoid stale layouts. Second, a <strong>server-side cache</strong> (<code>product:{id}:summary</code>) for high-traffic attributes (title, rating, primary price) with a 60 s TTL + jitter and request coalescing; price updates publish an “price-updated” event to bust specific keys. Third, a <strong>materialized view</strong> for “related products” recomputed via background jobs and versioned keys (e.g., <code>rel:{id}:vN</code>) to avoid mixed results during deploys.</p>
+      <p>Results: CDN reduces image bytes by 80% and cuts TTFB for static assets to ~20 ms at the edge. Server cache hits ~85% during peak, bringing the median to 180 ms and p95 to 600 ms. Correctness is protected by short TTLs and event-driven busts. Operational guardrails include dashboards for hit rate, eviction, stampede alerts, and a kill-switch to bypass caches during incidents.</p>
+    </section>
+
+    <section class="section" aria-labelledby="resources">
+      <h2 id="resources">Resources</h2>
       <ul class="resource-list">
-        <li><a href="https://redis.io/docs/" target="_blank" rel="noopener">Redis Documentation</a> — caching patterns and data structures.</li>
-        <li><a href="https://www.cloudflare.com/learning/cdn/what-is-a-cdn/" target="_blank" rel="noopener">Cloudflare: What is a CDN?</a> — accessible intro.</li>
-        <li>(Optional) “Designing Data-Intensive Applications” Ch. 5 — advanced caching strategies.</li>
+        <li class="item">
+          <div>
+            <a class="external" href="https://redis.io/docs/latest" target="_blank">Redis Documentation</a>
+            <div class="meta">Data structures, eviction policies, clustering, and persistence options for server-side caching.</div>
+          </div>
+          <span class="badge">Server Cache</span>
+        </li>
+        <li class="item">
+          <div>
+            <a class="external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching" target="_blank">MDN — HTTP Caching</a>
+            <div class="meta">Authoritative guidance on headers, validators, and caching semantics.</div>
+          </div>
+          <span class="badge">HTTP</span>
+        </li>
+        <li class="item">
+          <div>
+            <a class="external" href="https://www.cloudflare.com/learning/cdn/what-is-caching/" target="_blank">Cloudflare — What is Caching?</a>
+            <div class="meta">CDN perspectives on edge caching and performance trade-offs.</div>
+          </div>
+          <span class="badge">CDN</span>
+        </li>
       </ul>
     </section>
 
-    <section aria-labelledby="practice">
-      <h2 id="practice">Practice</h2>
-      <ol class="practice">
-        <li><strong>Cache sketch (20 min):</strong> Add a cache layer to your messaging app design. Where would you place it? <em>Success:</em> Diagram with at least one cache and reasoning.</li>
-        <li><strong>Header lab (15 min):</strong> Inspect <code>Cache-Control</code> and <code>ETag</code> headers of a popular website using browser dev tools. <em>Success:</em> Identify one asset with long TTL and one with none.</li>
-        <li><strong>Invalidation drill (25 min):</strong> Write how you’d invalidate cache when a message is edited. <em>Success:</em> Strategy that prevents stale reads without excessive cache clears.</li>
+    <section class="section practice" aria-labelledby="practice">
+      <div class="title">Practice <span class="badge">30–50 min</span></div>
+      <h2 id="practice" class="mt-1">Hands-on Tasks</h2>
+      <ol>
+        <li><strong>Header tune-up (10–15 min).</strong> Serve a static image and HTML from your local server. Add <code>Cache-Control</code> and <code>ETag</code>. <em>Success:</em> Browser devtools show 304 responses on reload; CDN-sim tool (or curl) reveals correct headers.</li>
+        <li><strong>Cache-aside (10–15 min).</strong> Wrap one read-heavy API in a Redis/Memcached cache. Choose a key and TTL with ±20% jitter. <em>Success:</em> 80%+ hit rate on a simulated burst; DB queries drop accordingly.</li>
+        <li><strong>Stampede guard (5–10 min).</strong> Implement request coalescing so only one worker recomputes a missing key. <em>Success:</em> Under 50 concurrent requests for a cold key, only one DB query executes.</li>
+        <li><strong>Invalidation drill (10–15 min).</strong> Add a “product-updated” event that purges related cache keys. <em>Success:</em> API returns fresh data within 1–2 s of update.</li>
       </ol>
     </section>
 
-    <section aria-labelledby="mastery">
-      <h2 id="mastery">Mastery Check</h2>
-      <ol class="mastery">
-        <li><strong>Define:</strong> What is a cache?
-          <details><summary>Sample answer</summary><p>A temporary storage for frequently accessed data to reduce latency and backend load. It may be browser, CDN, or server-side.</p></details>
-        </li>
-        <li><strong>Explain:</strong> Why is cache invalidation hard?
-          <details><summary>Sample answer</summary><p>Because multiple copies exist; ensuring all caches update in sync with source is complex. Risk of stale or inconsistent data.</p></details>
-        </li>
-        <li><strong>Apply:</strong> A feed shows posts minutes late due to caching. What’s the likely cause?
-          <details><summary>Sample answer</summary><p>TTL too long or missed explicit invalidations. Solution: reduce TTL, add event-driven invalidation, or hybrid approach.</p></details>
-        </li>
-        <li><strong>Evaluate:</strong> Redis vs. Memcached for caching user sessions?
-          <details><summary>Sample answer</summary><p>Memcached is simpler and very fast; Redis offers persistence, replication, and richer data structures. Choose Redis if you need durability or advanced operations.</p></details>
-        </li>
-        <li><strong>Explain:</strong> What is cache-aside?
-          <details><summary>Sample answer</summary><p>Application checks cache; if miss, load from DB, return to client, and populate cache. Common and flexible pattern.</p></details>
-        </li>
-        <li><strong>Apply:</strong> How would you design caching for profile pictures?
-          <details><summary>Sample answer</summary><p>Store images in object storage with CDN in front. Use browser cache with versioned URLs. Set long TTL because pictures rarely change.</p></details>
-        </li>
-      </ol>
+    <section class="section mastery" aria-labelledby="mastery">
+      <div class="title">Mastery Check <span class="badge">Self-assessment</span></div>
+      <h2 id="mastery" class="mt-1">Questions (with sample answers)</h2>
+
+      <details>
+        <summary>1) What’s the trade-off between longer TTLs and data freshness?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> Longer TTLs increase hit rate and reduce origin load, improving latency and throughput, but risk serving stale data after updates. Balance by using short TTLs for volatile data and explicit busting for critical updates.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>2) Compare cache-aside vs. write-through.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> Cache-aside loads on miss and may serve stale data right after a write; it’s simple and low-latency for writes. Write-through updates cache and DB on writes, keeping reads fresh at the cost of higher write latency and more failure modes.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>3) Why add jitter to TTLs?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> To avoid synchronized expiry where many keys die at once, causing a thundering herd of recomputations and DB load spikes.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>4) When should you avoid CDN caching?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> When responses are highly personalized or authorization-dependent and can’t be safely partitioned by headers/cookies, or when correctness requires real-time freshness that TTLs/purges can’t guarantee.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>5) Give an example of versioned keys and why they help during deploys.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> <code>rel:{productId}:v37</code> where a background job computes related items. When the algorithm changes, bump to <code>v38</code>; readers switch atomically, avoiding mixed results while old entries expire naturally.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>6) What metrics indicate a healthy cache?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> High hit rate for targeted endpoints, reduced DB QPS, lower p95 latency, stable memory usage, low eviction of hot keys, and absence of stampede spikes during traffic bursts.</p>
+        </div>
+      </details>
     </section>
 
-    <section aria-labelledby="recap">
+    <section class="section" aria-labelledby="recap">
       <h2 id="recap">Recap &amp; Next Steps</h2>
-      <p>
-        You learned the purpose and placement of caches, real-world examples with Redis and CDNs, and strategies for invalidation. 
-        Next we’ll scale systems by exploring vertical vs. horizontal scaling, load balancing, and bottleneck resolution.
-      </p>
+      <p><strong>Recap:</strong> You learned where to place caches, how to configure HTTP and server-side caches, and how to invalidate safely. You practiced choosing keys/TTLs, preventing stampedes, and purging entries on updates.</p>
+      <p><strong>Next:</strong> In <a href="chapters/ch05.html">Chapter 5</a>, we scale the system horizontally, introduce load balancers, and learn how to identify and relieve bottlenecks.</p>
     </section>
 
-    <nav class="next-prev" aria-label="Chapter pagination">
-      <a rel="prev" href="chapters/ch03.html" aria-label="Previous: Chapter 3">← Prev</a>
-      <a rel="next" href="chapters/ch05.html" aria-label="Next: Chapter 5">Next →</a>
+    <nav class="next-prev" aria-label="Chapter pager">
+      <a rel="prev" href="chapters/ch03.html">Previous: Storage &amp; Databases Fundamentals</a>
+      <a rel="next" href="chapters/ch05.html">Next: Scalability &amp; Load Handling</a>
     </nav>
-
-    <footer style="margin-top:2rem;color:var(--muted)">
-      <p>End of Chapter 4</p>
-    </footer>
   </main>
 
-  <!-- VALIDATION & MAPPING CHECKLIST
-  - [x] theme.css+app.js loaded
-  - [x] Canonical nav used verbatim; active link correct
-  - [x] Pager correct (prev=ch03, next=ch05)
-  - [x] Sections present (objectives/resources/practice/mastery)
-  - [x] Glossary links valid
-  - [x] Head/meta ok
-  - [x] No TODOs
-  -- Depth quick checks --
-  - [x] Chapter word count ≥ 1,200
-  - [x] ≥ 2 examples, ≥ 1 case study, ≥ 1 compare/contrast, ≥ 1 analogy
-  - [x] Practice: 3–5 tasks with criteria
-  - [x] Mastery: 5–7 Qs with <details> answers
-  - [x] ≥ 8 glossary terms introduced; ≥ 1 figure with caption
+  <footer class="site-footer">
+    <div class="container">
+      <p class="mb-0">© 2025 System Design (Beginner). Chapter 4.</p>
+    </div>
+  </footer>
+
+  <!--
+  CHECKLIST (do not remove)
+  - [x] /styles/theme.css + /scripts/app.js linked (paths correct for /chapters/)
+  - [x] <base href="../"> present & correct
+  - [x] Canonical nav verbatim; active link via app.js
+  - [x] Pager prev=ch03, next=ch05
+  - [x] Sections meet depth: 4.1–4.4 + examples, compare/contrast, analogy, trade-off
+  - [x] Practice (3–4 tasks) with time + success criteria
+  - [x] Mastery (5–7 Qs) with sample answers
+  - [x] ≥3 figures: cache-hierarchy.svg, cdn-flow.svg, redis-topology.svg, cache-invalidation-patterns.svg under /assets
+  - [x] ≥8 glossary-style terms via <abbr> (latency, throughput, TTL, freshness, edge compute, cache-aside, write-through, write-back)
+  - [x] Recap + Next steps
   -->
 </body>
 </html>

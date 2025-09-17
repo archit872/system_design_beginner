@@ -1,290 +1,278 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <base href="../"> 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chapter 1 — Orientation: What is System Design?</title>
-  <meta name="description" content="Why system design matters, how interviews differ from practice, and the core goals: scalability, reliability, maintainability—with key vocabulary." />
-  <meta property="og:title" content="Chapter 1 — Orientation: What is System Design?" />
-  <meta property="og:description" content="A practical orientation to system design for beginners: concepts, vocabulary, examples, figures, practice, and mastery check." />
-  <link rel="stylesheet" href="styles/theme.css" />
-  <script defer src="scripts/app.js"></script>
+  <meta charset="utf-8">
+  <title>Ch. 1 — Orientation: What is System Design?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Why system design matters, how it differs across interviews vs. real engineering, and the core goals: scalability, reliability, maintainability.">
+  <meta property="og:title" content="Chapter 1 — Orientation: What is System Design?">
+  <meta property="og:description" content="Understand the role of system design in industry, interviews, and day-to-day engineering, and learn essential vocabulary.">
+  <base href="../">
+  <link rel="stylesheet" href="styles/theme.css">
+  <script src="scripts/app.js" defer></script>
 </head>
 <body>
-  <!-- Canonical Navigation (copy verbatim from index; add aria-current on this page) -->
-  <nav class="app-nav" aria-label="Primary">
-    <a href="index.html">Home</a>
-    <a href="chapters/ch01.html" aria-current="page">Chapter 1</a>
-    <a href="chapters/ch02.html">Chapter 2</a>
-    <a href="chapters/ch03.html">Chapter 3</a>
-    <a href="chapters/ch04.html">Chapter 4</a>
-    <a href="chapters/ch05.html">Chapter 5</a>
-    <a href="chapters/ch06.html">Chapter 6</a>
-    <a href="chapters/ch07.html">Chapter 7</a>
-    <a href="chapters/ch08.html">Chapter 8</a>
-    <a href="chapters/appendix.html">Appendix</a>
-    <a href="chapters/glossary.html">Glossary</a>
-    <button class="nav-toggle" aria-label="Toggle menu" style="margin-left:auto">☰</button>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Canonical Navigation (copy verbatim across all pages) -->
+  <nav class="app-nav">
+    <div class="container inner">
+      <div class="brand">System Design (Beginner)</div>
+      <button class="toggle js-nav-toggle" aria-expanded="false" aria-controls="site-menu" aria-label="Toggle menu">☰ Menu</button>
+      <div id="site-menu" class="menu" role="navigation" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="chapters/ch01.html">Chapters</a>
+        <a href="chapters/appendix.html">Appendix</a>
+        <a href="chapters/glossary.html">Glossary</a>
+      </div>
+    </div>
   </nav>
 
-  <main>
-    <header class="page-hero">
-      <p class="badge" style="color:var(--muted);letter-spacing:.08em;">CHAPTER 1</p>
+  <header class="page-hero" id="top">
+    <div class="container">
+      <div class="meta">
+        <span class="badge badge-primary">Chapter 1</span>
+        <span class="badge">Orientation</span>
+      </div>
       <h1>Orientation — What is System Design?</h1>
-      <p style="max-width:72ch;margin-top:.5rem">
-        System design is the art of turning ambiguous requirements into a robust architecture. You’ll learn why it matters, how interviews differ from day-to-day engineering, and how to reason with core goals: <strong><a href="chapters/glossary.html#scalability">scalability</a></strong>, <strong><a href="chapters/glossary.html#reliability">reliability</a></strong>, and <strong><a href="chapters/glossary.html#maintainability">maintainability</a></strong>. We also establish key terms such as <strong><a href="chapters/glossary.html#api">API</a></strong>, <strong><a href="chapters/glossary.html#latency">latency</a></strong>, and <strong><a href="chapters/glossary.html#throughput">throughput</a></strong>—the language you’ll use for the rest of the book.
-      </p>
-    </header>
+      <p class="abstract">This chapter defines system design, shows how it appears in interviews versus real engineering, and introduces the goals that anchor every design decision: <abbr title="Ability to maintain performance as load grows">scalability</abbr>, <abbr title="Ability to keep operating correctly in the face of faults">reliability</abbr>, and <abbr title="Ease of changing, testing, and operating a system">maintainability</abbr>. You’ll also learn the core vocabulary that we’ll use throughout the book.</p>
+    </div>
+  </header>
 
-    <section aria-labelledby="prereq">
-      <h2 id="prereq">Prerequisites</h2>
-      <p>Basic programming knowledge (variables, HTTP requests, simple data structures). If you can build a minimal REST endpoint and consume it from a script, you’re ready.</p>
+  <main id="main" class="container section">
+    <section class="section" aria-labelledby="prereqs">
+      <h2 id="prereqs">Prerequisites &amp; Learning Objectives</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">Prerequisites</h3>
+          <ul>
+            <li>Basic programming knowledge in any language.</li>
+            <li>Comfort with the command line and running a local web server.</li>
+            <li>Curiosity about how large apps work under constraints (time, cost, scale).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="mt-0">Objectives</h3>
+          <ul>
+            <li>Explain <em>what</em> system design is and why it matters in industry.</li>
+            <li>Differentiate interview-style design from real-world practice.</li>
+            <li>Use common terms—<abbr title="Time from request to response">latency</abbr>, <abbr title="Work done per unit time">throughput</abbr>, <abbr title="Percentage of time the system is operational">availability</abbr>—accurately.</li>
+            <li>Identify how <strong>scalability</strong>, <strong>reliability</strong>, and <strong>maintainability</strong> steer design choices.</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
-    <section aria-labelledby="objectives">
-      <h2 id="objectives">Learning Objectives</h2>
-      <ul class="resource-list">
-        <li>Explain why system design matters for product outcomes and team velocity.</li>
-        <li>Differentiate coding interviews from system design interviews.</li>
-        <li>Describe the core goals: scalability, reliability, maintainability.</li>
-        <li>Use foundational vocabulary (API, latency, throughput, <a href="chapters/glossary.html#slo">SLO</a>, <a href="chapters/glossary.html#sla">SLA</a>, <a href="chapters/glossary.html#availability">availability</a>).</li>
-      </ul>
-    </section>
-
-    <figure aria-labelledby="fig1">
-      <svg role="img" aria-labelledby="fig1" width="100%" height="170" viewBox="0 0 900 170">
-        <title id="fig1">High-level system design surface</title>
-        <rect x="10" y="10" width="880" height="150" rx="14" fill="#111726" stroke="#1b2330"/>
-        <!-- User -->
-        <rect x="40" y="50" width="120" height="70" rx="10" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="100" y="92" text-anchor="middle" fill="#e6edf3" font-size="12">Users/Clients</text>
-        <!-- Arrow -->
-        <line x1="160" y1="85" x2="225" y2="85" stroke="#7a87ff"/>
-        <polygon points="225,85 217,80 217,90" fill="#7a87ff"/>
-        <!-- Edge/CDN -->
-        <rect x="230" y="40" width="130" height="90" rx="10" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="295" y="70" text-anchor="middle" fill="#e6edf3" font-size="12">Edge/CDN</text>
-        <text x="295" y="90" text-anchor="middle" fill="#9fb0c3" font-size="10">Cache &amp; TLS</text>
-        <!-- Arrow -->
-        <line x1="360" y1="85" x2="425" y2="85" stroke="#7a87ff"/>
-        <polygon points="425,85 417,80 417,90" fill="#7a87ff"/>
-        <!-- App tier -->
-        <rect x="430" y="30" width="160" height="110" rx="10" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="510" y="70" text-anchor="middle" fill="#e6edf3" font-size="12">App/Services</text>
-        <text x="510" y="90" text-anchor="middle" fill="#9fb0c3" font-size="10">Auth • API • LB</text>
-        <!-- Down arrow to DB -->
-        <line x1="510" y1="140" x2="510" y2="155" stroke="#7a87ff"/>
-        <!-- Data layer -->
-        <ellipse cx="700" cy="85" rx="80" ry="45" fill="#0f141b" stroke="#4cc2ff"/>
-        <text x="700" y="80" text-anchor="middle" fill="#e6edf3" font-size="12">Storage</text>
-        <text x="700" y="98" text-anchor="middle" fill="#9fb0c3" font-size="10">SQL/NoSQL • Cache</text>
-      </svg>
-      <figcaption id="fig1">Figure 1. The “surface” of typical designs—clients, edge, app/services, and data. Each block implies choices and trade-offs.</figcaption>
+    <figure>
+      <img src="assets/system-design-triangle.svg" alt="Triangle showing three goals: Scalability, Reliability, Maintainability with trade-offs at the edges" />
+      <figcaption>The System Design Triangle: every feature and component influences <em>at least</em> one of scalability, reliability, or maintainability.</figcaption>
     </figure>
 
-    <section aria-labelledby="s11">
-      <h2 id="s11">1.1 What System Design Means in Industry</h2>
-      <p>
-        In industry, system design is a workflow: clarify requirements, identify constraints, propose architecture, evaluate trade-offs, and iterate. The outcome isn’t just diagrams; it’s a shared plan that coordinates teams and informs future change. Good design reduces rework and accelerates delivery because developers can make local decisions without constantly re-negotiating global ones.
-      </p>
-      <p>
-        Think of design like city planning. Streets (<strong><a href="chapters/glossary.html#api">APIs</a></strong>) connect neighborhoods (services); speed limits (<strong><a href="chapters/glossary.html#slo">SLOs</a></strong>) balance safety and throughput; utilities (databases, queues, caches) ensure reliable daily life. If you widen roads for more <strong><a href="chapters/glossary.html#throughput">throughput</a></strong>, you might increase noise (cost/complexity). This analogy helps you remember that design is the management of constraints under real-world limits.
-      </p>
-      <div class="callout success"><strong>Analogy:</strong> A code module is a room; a system is a building. You can furnish a room any way you like, but the building must obey weight limits, fire exits, and shared utilities.</div>
-
-      <h3>Mini case study: A feature launch under load</h3>
-      <p>
-        A small social app is preparing a “stories” feature. Marketing expects a 5× spike on launch day. The team has one week. They consider two paths:
-      </p>
-      <ul class="resource-list">
-        <li><strong>Path A:</strong> Ship immediately using current monolith; rely on vertical scaling (bigger VM) and a CDN to cache media.</li>
-        <li><strong>Path B:</strong> Extract a “stories-service,” add a <strong><a href="chapters/glossary.html#load-balancer">load balancer</a></strong>, and integrate a <strong><a href="chapters/glossary.html#queue">queue</a></strong> for uploads with background processing.</li>
-      </ul>
-      <p>
-        Path A is fast but risks downtime if the database becomes a <strong><a href="chapters/glossary.html#bottleneck">bottleneck</a></strong>. Path B improves <strong><a href="chapters/glossary.html#reliability">reliability</a></strong> and <strong><a href="chapters/glossary.html#scalability">scalability</a></strong> but may slip the deadline. The team chooses A plus a simple <strong><a href="chapters/glossary.html#rate-limiting">rate limit</a></strong> and an emergency read replica. They also define clear <strong><a href="chapters/glossary.html#slo">SLOs</a></strong> for media latency. The feature launches with short slowdowns but no outage—an acceptable trade-off given the time constraint.
-      </p>
-      <div class="callout info"><strong>Trade-off highlight:</strong> Deliver now with mitigations vs. re-architect for the ideal end state. Optimize for the current constraint you can’t change (time) while keeping a path to evolve.</div>
-    </section>
-
-    <section aria-labelledby="s12">
-      <h2 id="s12">1.2 System Design in Interviews vs. Practice</h2>
-      <p>
-        Interviews compress months of learning into 45–60 minutes. You demonstrate structured thinking under time pressure: clarify requirements, pick a sensible baseline, call out risks, and communicate trade-offs. Real projects add long-running factors like compliance, org constraints, staged rollouts, on-call experience, and cost models.
-      </p>
-
-      <h3>Compare &amp; Contrast</h3>
-      <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border)">
-            <th style="text-align:left;padding:.5rem">Dimension</th>
-            <th style="text-align:left;padding:.5rem">Interview</th>
-            <th style="text-align:left;padding:.5rem">Practice</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:.5rem">Scope</td>
-            <td style="padding:.5rem">Single session; simplified constraints</td>
-            <td style="padding:.5rem">Evolving scope; shifting requirements</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:.5rem">Metrics</td>
-            <td style="padding:.5rem">Back-of-the-envelope <strong><a href="chapters/glossary.html#estimation">estimations</a></strong></td>
-            <td style="padding:.5rem">Measured <strong><a href="chapters/glossary.html#sli">SLIs</a></strong>, budgets, <strong><a href="chapters/glossary.html#sla">SLAs</a></strong></td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:.5rem">Risk</td>
-            <td style="padding:.5rem">Hypothetical failures</td>
-            <td style="padding:.5rem">Real incidents; <strong><a href="chapters/glossary.html#postmortem">postmortems</a></strong></td>
-          </tr>
-          <tr>
-            <td style="padding:.5rem">Artifacts</td>
-            <td style="padding:.5rem">Whiteboard diagrams, spoken trade-offs</td>
-            <td style="padding:.5rem">Design docs, runbooks, dashboards</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="callout warn">
-        <strong>Common pitfall:</strong> jumping into micro-optimizations (e.g., sharding) before stating baseline requirements. Always confirm <em>what</em> you’re solving before <em>how</em>.
-      </div>
-    </section>
-
-    <section aria-labelledby="s13">
-      <h2 id="s13">1.3 Core Goals: Scalability, Reliability, Maintainability</h2>
-      <p>
-        These goals guide most decisions. You rarely maximize all three—design is about balancing them for your product’s stage and constraints.
-      </p>
-
-      <h3>Scalability</h3>
-      <p>
-        <strong><a href="chapters/glossary.html#scalability">Scalability</a></strong> is a system’s ability to handle increased <strong><a href="chapters/glossary.html#load">load</a></strong> without unacceptable <strong><a href="chapters/glossary.html#latency">latency</a></strong> or cost. Horizontal scaling (more instances) is usually preferred over vertical (bigger instance) beyond early stages. Watch <em>state</em>: the more state a service holds, the harder it is to scale.
-      </p>
-
-      <h3>Reliability</h3>
-      <p>
-        <strong><a href="chapters/glossary.html#reliability">Reliability</a></strong> means doing what you promise, consistently. It is often measured via <strong><a href="chapters/glossary.html#availability">availability</a></strong> (e.g., 99.9%) and quantified by <strong><a href="chapters/glossary.html#slo">SLOs</a></strong> and <strong><a href="chapters/glossary.html#sli">SLIs</a></strong>. Techniques include redundancy, <strong><a href="chapters/glossary.html#idempotency">idempotency</a></strong>, and failover. Reliability also accounts for <strong><a href="chapters/glossary.html#tail-latency">tail latency</a></strong>, not just averages.
-      </p>
-
-      <h3>Maintainability</h3>
-      <p>
-        <strong><a href="chapters/glossary.html#maintainability">Maintainability</a></strong> is the ease of changing and operating a system. Clear boundaries, good observability, and automation (tests, CI/CD) pay dividends. A highly scalable system that only two people understand is a long-term liability.
-      </p>
-
+    <section class="section" aria-labelledby="industry">
+      <h2 id="industry">1.1 What System Design Means in Industry</h2>
+      <p>At its core, <strong>system design</strong> is the process of turning requirements into a cohesive architecture under constraints. The constraints include traffic levels, data growth, latency budgets, regulatory obligations, <abbr title="Cloud or on-prem cost to provide a service">cost of goods sold (COGS)</abbr>, team skills, and deadlines. Unlike pure algorithmic problems, the “answer” is rarely unique. Good design is a <em>defensible narrative</em> supported by measurements and trade-offs.</p>
+      <p>Industry work usually starts with a problem statement (<em>“We need a notifications service for 50k DAU”</em>) and ends with an implementation plan. Along the way, you’ll analyze <abbr title="Non-functional expectations such as latency, throughput, availability, durability">non-functional requirements</abbr>, choose technologies, sketch data flows, estimate capacity, and propose operational guardrails (rate limits, retries, circuit breakers). It is as much about communication as technology: writing clear design docs and aligning stakeholders is a core competency.</p>
       <div class="callout info">
-        <strong>Trade-off:</strong> Building for 10× the current scale may reduce maintainability now. Prefer an evolutionary path: baseline → measure → refactor with data.
+        <p class="mb-0"><strong>Analogy:</strong> System design is like city planning. Roads (APIs), traffic rules (protocols), buildings (services), utilities (databases, caches), and emergency services (monitoring, on-call) must coordinate. You can expand a city district-by-district if you keep future growth and resilience in mind.</p>
+      </div>
+      <p><strong>Example:</strong> Suppose your company expects a 10× traffic spike during a festival sale. You might pre-warm caches, add auto-scaling rules, and shed non-critical workloads. You’d also cap per-user request rates and prioritize cart/checkout APIs over recommendation refreshes. The design balances <em>reliability</em> under load and <em>maintainability</em> by avoiding ad-hoc hacks.</p>
+      <p><strong>Counter-example:</strong> A team chooses a single-node database for a chat product to “avoid complexity.” It works for a pilot but fails under growth; adding sharding later is expensive. Here the design optimized early for simplicity but ignored <em>scalability</em> and <em>availability</em> needs.</p>
+    </section>
+
+    <section class="section" aria-labelledby="interviews">
+      <h2 id="interviews">1.2 System Design in Interviews vs. Practice</h2>
+      <p>Interviews compress months of engineering into 30–60 minutes. You won’t build anything; you’ll communicate a clear approach. The signals interviewers look for include: structured requirements gathering, identification of bottlenecks, sane data modeling, awareness of <abbr title="Strategies to reduce or smooth traffic">caching and load leveling</abbr>, and explicit trade-offs. You’ll rarely dive deep into vendor-specific details.</p>
+      <p>In practice, you’ll prototype, run load tests, and iterate with metrics. Reliability work (e.g., <abbr title="Service Level Objectives">SLOs</abbr>, <abbr title="Error budgets translate SLOs to allowed failure time">error budgets</abbr>) and operational plans (alerts, dashboards, runbooks) carry heavy weight. Interview designs can be elegant but brittle; production designs must handle failures, migrations, and human error.</p>
+      <div class="grid two">
+        <div class="card">
+          <h3 class="mt-0">Compare &amp; Contrast</h3>
+          <table>
+            <thead><tr><th>Aspect</th><th>Interview</th><th>Industry Practice</th></tr></thead>
+            <tbody>
+              <tr><td>Time horizon</td><td>45 minutes</td><td>Weeks to months</td></tr>
+              <tr><td>Evidence</td><td>Reasoned estimates</td><td>Benchmarks, canaries, metrics</td></tr>
+              <tr><td>Scope</td><td>High-level components</td><td>APIs, schemas, rollout plans</td></tr>
+              <tr><td>Risk</td><td>Hypothetical</td><td>Real outages &amp; on-call</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3 class="mt-0">Pitfall</h3>
+          <p><strong>Over-indexing on novelty.</strong> In interviews, proposing Kafka + Cassandra + gRPC + Kubernetes for a tiny feature can sound impressive, but it may ignore the simplest solution that meets requirements. In practice, unnecessary complexity harms <em>maintainability</em> and increases failure modes.</p>
+        </div>
       </div>
     </section>
 
-    <section aria-labelledby="s14">
-      <h2 id="s14">1.4 Key Vocabulary</h2>
-      <p>
-        Learn and use these consistently:
-      </p>
-      <ul class="resource-list">
-        <li><strong><a id="api-term" href="chapters/glossary.html#api">API</a></strong> — Boundary for requests/responses between components.</li>
-        <li><strong><a href="chapters/glossary.html#latency">Latency</a></strong> — Time to serve a request (often p50/p95/p99).</li>
-        <li><strong><a href="chapters/glossary.html#throughput">Throughput</a></strong> — Requests or data processed per unit time.</li>
-        <li><strong><a href="chapters/glossary.html#capacity-planning">Capacity planning</a></strong> — Estimating resources to meet demand.</li>
-        <li><strong><a href="chapters/glossary.html#bottleneck">Bottleneck</a></strong> — The slowest component that limits system performance.</li>
-        <li><strong><a href="chapters/glossary.html#rate-limiting">Rate limiting</a></strong> — Controlling request rate to protect services.</li>
-        <li><strong><a href="chapters/glossary.html#queue">Queue</a></strong> — Buffer that decouples producers/consumers.</li>
-        <li><strong><a href="chapters/glossary.html#availability">Availability</a></strong> — Proportion of time a service is usable.</li>
-        <li><strong><a href="chapters/glossary.html#slo">SLO</a></strong> / <strong><a href="chapters/glossary.html#sli">SLI</a></strong> / <strong><a href="chapters/glossary.html#sla">SLA</a></strong> — Objective/indicator/agreement around reliability.</li>
-        <li><strong><a href="chapters/glossary.html#tail-latency">Tail latency</a></strong> — Slowest responses that dominate user pain.</li>
-      </ul>
-      <div class="callout danger">
-        <strong>Misuse warning:</strong> Don’t conflate <em>latency</em> with <em>throughput</em>. A system can have high throughput but still feel slow to users due to high tail latency.
+    <section class="section" aria-labelledby="goals">
+      <h2 id="goals">1.3 Core Goals: Scalability, Reliability, Maintainability</h2>
+      <p>These goals provide a compass for decisions. When stuck, ask: <em>Which goal am I optimizing right now, and what am I trading off?</em></p>
+      <h3 id="scalability">Scalability</h3>
+      <p><strong>Plain:</strong> Will it keep up when usage grows? <strong>Formal:</strong> The property that a system can handle increased load by adding resources, often <abbr title="Increasing the number of machines rather than the power of a single machine">horizontally</abbr>. <strong>Pitfall:</strong> Confusing burst handling with sustained scaling. <strong>Example:</strong> A stateless API behind a load balancer lets you add replicas to increase <abbr title="Requests per second or similar">throughput</abbr>.</p>
+      <h3 id="reliability">Reliability</h3>
+      <p><strong>Plain:</strong> Does it keep working when things break? <strong>Formal:</strong> The probability a system performs its intended function over a period, often measured via <abbr title="E.g., 99.9% monthly availability">SLA/SLO</abbr>. <strong>Pitfall:</strong> Treating retries as a fix-all; without idempotency and backoff, retries amplify incidents. <strong>Example:</strong> Replication and automated failover keep a service available during a node failure.</p>
+      <h3 id="maintainability">Maintainability</h3>
+      <p><strong>Plain:</strong> How easily can we change and operate it? <strong>Formal:</strong> The degree of effort required to modify, test, deploy, and troubleshoot. <strong>Pitfall:</strong> Accumulating hidden operational complexity (hand-tuned shards, bespoke queues). <strong>Example:</strong> Well-factored services with clear APIs and dashboards reduce cognitive load for new contributors.</p>
+      <div class="callout warn">
+        <span class="icon">⚖️</span>
+        <strong>Trade-off:</strong> Adding heavy consistency guarantees (e.g., serializable transactions across regions) may improve correctness but increase latency and cost, harming scalability. Choose the weakest consistency that satisfies user needs.
       </div>
     </section>
 
-    <section aria-labelledby="examples">
-      <h2 id="examples">Concrete Examples</h2>
-      <h3>Example A: API latency vs. user-perceived speed</h3>
-      <p>
-        A feed API responds in 120&nbsp;ms (p50) but image loads block rendering for 1.5&nbsp;s. The fix is not optimizing the API first; it’s adding image placeholders, compressing assets, and using a CDN. System design sees the <em>whole</em> request path.
-      </p>
-      <h3>Example B: Throughput gain by queueing</h3>
-      <p>
-        Video uploads overwhelm a single server doing sync processing. Introduce a queue and background workers; the upload API returns quickly while processing continues. Median latency improves; throughput increases by parallelism.
-      </p>
+    <section class="section" aria-labelledby="vocab">
+      <h2 id="vocab">1.4 Key Vocabulary</h2>
+      <div class="grid two">
+        <div>
+          <dl>
+            <dt><strong>API</strong></dt>
+            <dd><em>Plain:</em> How one piece of software asks another to do something. <em>Formal:</em> A contract of request/response schemas and semantics (REST/RPC/GraphQL).</dd>
+
+            <dt><strong>Latency</strong></dt>
+            <dd><em>Plain:</em> How long you wait for a response. <em>Formal:</em> End-to-end time between request and response, often summarized by percentiles (p50, p95).</dd>
+
+            <dt><strong>Throughput</strong></dt>
+            <dd><em>Plain:</em> How much work gets done per second. <em>Formal:</em> Rate of completed requests or processed items per time unit.</dd>
+
+            <dt><strong>Availability</strong></dt>
+            <dd><em>Plain:</em> Chance the system is up. <em>Formal:</em> Proportion of time a service meets its SLO (e.g., 99.9%).</dd>
+
+            <dt><strong>Durability</strong></dt>
+            <dd><em>Plain:</em> Data sticks around. <em>Formal:</em> Probability of data survival over time, often via replication and backups.</dd>
+          </dl>
+        </div>
+        <div>
+          <dl>
+            <dt><strong>Consistency</strong></dt>
+            <dd><em>Plain:</em> Users see the “same truth.” <em>Formal:</em> Guarantees about reads/writes order and visibility (eventual, strong, causal).</dd>
+
+            <dt><strong>Partition</strong></dt>
+            <dd><em>Plain:</em> The network splits. <em>Formal:</em> Loss of communication between nodes; prompts CAP trade-offs.</dd>
+
+            <dt><strong>Idempotency</strong></dt>
+            <dd><em>Plain:</em> Doing the same request twice has the same effect. <em>Formal:</em> Operation semantics where repeated execution yields an equivalent state.</dd>
+
+            <dt><strong>Backpressure</strong></dt>
+            <dd><em>Plain:</em> Slow down the sender to avoid overload. <em>Formal:</em> Mechanisms that regulate producers when consumers lag.</dd>
+
+            <dt><strong>Observability</strong></dt>
+            <dd><em>Plain:</em> Can we understand what’s happening? <em>Formal:</em> The ability to infer internal state via logs, metrics, and traces.</dd>
+          </dl>
+        </div>
+      </div>
+      <p class="muted">You’ll see these terms throughout the book. Full entries appear in the <a href="chapters/glossary.html">Glossary</a>.</p>
     </section>
 
-    <section aria-labelledby="resources">
-      <h2 id="resources">Recommended Resources &amp; Why</h2>
+    <section class="section" aria-labelledby="case">
+      <h2 id="case">Case Study: “Morning Commute” of a Request (≈200 words)</h2>
+      <p>Imagine opening a mobile app to view your notifications. Your client issues an HTTPS request to an API endpoint. A <abbr title="Distributes traffic across servers">load balancer</abbr> selects a healthy replica of the notifications service. Because the service is <strong>stateless</strong>, any replica can serve the request; user state lives in a database and cache. The service queries a <abbr title="Key-value or document store used to speed up reads">cache</abbr> for the user’s unread count (fast path). On a miss, it hits the primary database with an indexed query, then writes the result into the cache with a short TTL.</p>
+      <p>To personalize, the service fans out to a “preferences” microservice via RPC. If that dependency is slow, a client-side timeout triggers fallbacks (e.g., default settings) to keep the overall <strong>latency</strong> within the budget. Metrics capture p95 latency and error rates; distributed tracing ties the hop sequence together. If a dependency fails outright, a <abbr title="Stops calls to an unhealthy dependency to prevent cascading failures">circuit breaker</abbr> opens and requests use cached results. The response is returned to the client, and a CDN caches static assets to reduce repeat downloads. In ~200 ms, your inbox appears—an orchestration of scalability (replicas, CDN), reliability (circuit breaker, retries), and maintainability (statelessness, observability).</p>
+    </section>
+
+    <section class="section" aria-labelledby="resources">
+      <h2 id="resources">Recommended Resources</h2>
       <ul class="resource-list">
-        <li><a href="https://github.com/donnemartin/system-design-primer" target="_blank" rel="noopener">System Design Primer (GitHub)</a> — broad survey; excellent for quick patterns and trade-offs.</li>
-        <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" target="_blank" rel="noopener">MDN: HTTP Overview</a> — solid grounding for request/response semantics.</li>
-        <li>(Optional, paid) Grokking the System Design Interview — interview-style prompts to practice pacing and structure.</li>
+        <li class="item">
+          <div>
+            <a class="external" href="https://github.com/donnemartin/system-design-primer" target="_blank">System Design Primer (GitHub)</a>
+            <div class="meta">Broad survey with case studies; read selectively to reinforce each chapter.</div>
+          </div>
+          <span class="badge">Survey</span>
+        </li>
+        <li class="item">
+          <div>
+            <a class="external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" target="_blank">MDN — HTTP Overview</a>
+            <div class="meta">Authoritative intro to request/response, headers, methods, and caching directives.</div>
+          </div>
+          <span class="badge">Reference</span>
+        </li>
+        <li class="item">
+          <div>
+            <a class="external" href="https://sre.google/sre-book/table-of-contents/" target="_blank">Google SRE Book (Ch. 1–3)</a>
+            <div class="meta">Foundations of reliability thinking, SLIs/SLOs, and error budgets.</div>
+          </div>
+          <span class="badge">Reliability</span>
+        </li>
       </ul>
     </section>
 
-    <section aria-labelledby="practice">
-      <h2 id="practice">Practice</h2>
-      <ol class="practice">
-        <li><strong>Daily systems audit (20–30 min):</strong> List three systems you use (WhatsApp, YouTube, Maps). For each, write 3–5 key features and at least one performance challenge (e.g., end-to-end encryption vs. group size). <em>Success:</em> Three lists plus one hypothesized bottleneck each.</li>
-        <li><strong>Glossary drill (15 min):</strong> Write your own one-sentence definition for <em>latency</em>, <em>throughput</em>, <em>availability</em>. <em>Success:</em> Definitions use measurable phrasing (e.g., “p95 under 300&nbsp;ms”).</li>
-        <li><strong>Request path sketch (25–35 min):</strong> Draw the request path from a browser to a simple API and back (DNS → CDN → LB → app → DB). <em>Success:</em> Each hop labeled with potential failure modes.</li>
+    <section class="section practice" aria-labelledby="practice">
+      <div class="title">Practice <span class="badge">20–30 min</span></div>
+      <h2 id="practice" class="mt-1">Orientation Tasks</h2>
+      <ol>
+        <li><strong>Three daily systems.</strong> Pick three apps you use daily (e.g., WhatsApp, YouTube, Maps). For each, list 3–5 features and <em>one</em> performance challenge (e.g., “low-latency messaging at global scale”). <em>Success:</em> Each app has at least one plausible scalability or reliability concern identified.</li>
+        <li><strong>Latency vs. throughput.</strong> In your own words, write one paragraph contrasting these metrics and how optimizing one can hurt the other. <em>Success:</em> Includes a concrete example (e.g., batch writes increase throughput but add latency).</li>
+        <li><strong>Draw a request path.</strong> Sketch client → DNS → CDN → LB → service → cache/db → service → client. <em>Success:</em> All hops labeled with 1–2 responsibilities each.</li>
       </ol>
     </section>
 
-    <section aria-labelledby="mastery">
-      <h2 id="mastery">Mastery Check</h2>
-      <ol class="mastery">
-        <li><strong>Define:</strong> What is <em>latency</em>? What’s the difference between p50 and p95?
-          <details><summary>Sample answer</summary><p>Latency is the time from request to response. p50 is median (half are faster), p95 highlights tail; improving p95 often improves user experience more than p50.</p></details>
-        </li>
-        <li><strong>Explain:</strong> Why is throughput not the same as latency?
-          <details><summary>Sample answer</summary><p>Throughput measures volume/time; latency measures time/request. You can increase throughput via parallelism while leaving latency unchanged or even worse for individual requests.</p></details>
-        </li>
-        <li><strong>Apply:</strong> A read-heavy API has 400&nbsp;ms p95 due to DB load. Name two changes.
-          <details><summary>Sample answer</summary><p>Add a cache layer (CDN or Redis) for hot reads; add a read replica and route reads; denormalize or add indexes to reduce query time.</p></details>
-        </li>
-        <li><strong>Evaluate:</strong> When would you choose vertical over horizontal scaling?
-          <details><summary>Sample answer</summary><p>Early stage with low traffic; when stateful constraints make horizontal complex; for short-term spikes where increasing instance size is cheapest.</p></details>
-        </li>
-        <li><strong>Explain:</strong> What’s an SLO vs. an SLA?
-          <details><summary>Sample answer</summary><p>SLO is an internal objective (e.g., p95 &lt; 300&nbsp;ms); SLA is an external commitment with consequences; SLIs are the metrics used to judge SLO/SLA (e.g., request success rate).</p></details>
-        </li>
-        <li><strong>Apply:</strong> Users complain of intermittent slowness. What metric would you check first?
-          <details><summary>Sample answer</summary><p>Tail latency (p95/p99) and error rate by dependency; intermittent issues often hide in tails or a single dependent service.</p></details>
-        </li>
-      </ol>
+    <section class="section mastery" aria-labelledby="mastery">
+      <div class="title">Mastery Check <span class="badge">Self-assessment</span></div>
+      <h2 id="mastery" class="mt-1">Short Quiz (with sample answers)</h2>
+
+      <details>
+        <summary>1) Define <em>latency</em> in your own words and give a scenario where p95 matters more than average.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> Latency is the time between sending a request and receiving the response. p95 matters for user experience because a few very slow requests dominate perceived performance—e.g., checkout flows where 1 in 20 users see a spinner for 3 seconds.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>2) Define <em>throughput</em> and explain its tension with latency.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> Throughput is work completed per unit time. Batching improves throughput but increases per-request latency (e.g., processing 100 messages at once). Conversely, prioritizing low latency may reduce batching opportunities and total throughput.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>3) What does <em>scalability</em> mean? Provide a concrete example.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> The ability to handle increased load by adding resources. Example: A stateless API can scale horizontally by adding pods behind a load balancer.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>4) How do interviews differ from production design in terms of evidence?</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> Interviews rely on reasoned estimates, while production design requires evidence from benchmarks, staging canaries, load tests, and production metrics.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>5) Give a plain + formal definition of <em>idempotency</em> and one pitfall.</summary>
+        <div class="pad-2">
+          <p><strong>Sample answer:</strong> Plain: repeating a request doesn’t double-charge or duplicate effects. Formal: running the same operation multiple times yields an equivalent state. Pitfall: forgetting to include a request identifier so retries create duplicates.</p>
+        </div>
+      </details>
     </section>
 
-    <section aria-labelledby="recap">
+    <section class="section" aria-labelledby="recap">
       <h2 id="recap">Recap &amp; Next Steps</h2>
-      <p>
-        You learned why design matters, how interview expectations differ from practice, and the guiding goals of scalability, reliability, and maintainability—plus vocabulary that lets you communicate precisely. Next, we’ll dive into the client-server model and the mechanics of HTTP, APIs, and communication styles.
-      </p>
+      <p><strong>Recap:</strong> You learned what system design means at work, how interview constraints shape the conversation, and how <em>scalability, reliability, maintainability</em> guide decisions. You also met essential terms like latency, throughput, availability, and idempotency.</p>
+      <p><strong>Next:</strong> In <a href="chapters/ch02.html">Chapter 2</a>, we dive into clients, servers, and communication patterns (REST vs. RPC) and show how a request actually travels across the network.</p>
     </section>
 
-    <nav class="next-prev" aria-label="Chapter pagination">
+    <nav class="next-prev" aria-label="Chapter pager">
+      <!-- First chapter: no prev link -->
       <span></span>
-      <a rel="next" href="chapters/ch02.html" aria-label="Next: Chapter 2">Next →</a>
+      <a rel="next" href="chapters/ch02.html">Next: Core Concepts — Clients, Servers &amp; Communication</a>
     </nav>
-
-    <footer style="margin-top:2rem;color:var(--muted)">
-      <p>End of Chapter 1</p>
-    </footer>
   </main>
 
-  <!-- VALIDATION & MAPPING CHECKLIST
-  - [x] theme.css+app.js loaded
-  - [x] Canonical nav used verbatim; active link correct
-  - [x] Pager correct (no prev; next -> ch02)
-  - [x] ToC order matches file numbering
-  - [x] Sections present (objectives/resources/practice/mastery)
-  - [x] Glossary links valid (to be created)
-  - [x] Head/meta ok
-  - [x] No TODOs
-  -- Depth quick checks --
-  - [x] Chapter word count ≥ 1,200
-  - [x] ≥ 2 examples, ≥ 1 case study, ≥ 1 compare/contrast, ≥ 1 analogy
-  - [x] Practice: 3–5 tasks with criteria
-  - [x] Mastery: 5–7 Qs with <details> answers
-  - [x] ≥ 8 glossary terms introduced; ≥ 1 figure with caption
+  <footer class="site-footer">
+    <div class="container">
+      <p class="mb-0">© 2025 System Design (Beginner). Chapter 1.</p>
+    </div>
+  </footer>
+
+  <!--
+  CHECKLIST (do not remove)
+  - [x] /styles/theme.css + /scripts/app.js linked (paths correct for /chapters/)
+  - [x] <base href="../"> present & correct
+  - [x] Canonical nav verbatim; one active link handled by app.js
+  - [x] Pager: only Next → ch02 (no Prev on first chapter)
+  - [x] Sections meet depth: objectives, 1.1–1.4, vocabulary, case study, resources, practice, mastery
+  - [x] ≥1 figure (system-design-triangle.svg) under /assets
+  - [x] ≥8 glossary-style terms via <abbr> or glossary link
+  - [x] Recap + Next steps
   -->
 </body>
 </html>
