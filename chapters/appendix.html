@@ -65,10 +65,10 @@ Advanced  ───► Global scale, consensus, formal SLAs/SLOs, performance en
         <li><strong>Confusing latency vs. throughput.</strong> <em>Fix:</em> Track both; optimize p95 and p99 for UX.</li>
         <li><strong>Ignoring failures.</strong> <em>Fix:</em> Add one redundancy per critical component + a graceful degradation path.</li>
         <li><strong>Premature sharding.</strong> <em>Fix:</em> Exhaust indexes and caching first; design shard key with access patterns.</li>
-        <li><strong>Sticky sessions everywhere.</strong> <em>Fix:</em> Externalize session state (JWT/Redis) to keep services <a href="/chapters/glossary.html#stateless">stateless</a>.</li>
+        <li><strong>Sticky sessions everywhere.</strong> <em>Fix:</em> Externalize session state (JWT/Redis) to keep services <a href="chapters/glossary.html#stateless">stateless</a>.</li>
         <li><strong>Cache invalidation laziness.</strong> <em>Fix:</em> Choose TTL vs. explicit purge; document keys and who owns invalidation.</li>
         <li><strong>Replica-induced staleness.</strong> <em>Fix:</em> “Read your writes” policy or bounded-staleness reads for writers.</li>
-        <li><strong>Sync analytics on the hot path.</strong> <em>Fix:</em> Emit to a <a href="/chapters/glossary.html#queue">queue</a>, batch process, display eventual counts.</li>
+        <li><strong>Sync analytics on the hot path.</strong> <em>Fix:</em> Emit to a <a href="chapters/glossary.html#queue">queue</a>, batch process, display eventual counts.</li>
         <li><strong>No observability.</strong> <em>Fix:</em> Define SLIs/SLOs, instrument tracing, and set alerts on user-facing symptoms.</li>
       </ol>
     </section>
@@ -92,7 +92,7 @@ Advanced  ───► Global scale, consensus, formal SLAs/SLOs, performance en
       <h2 id="study-path">From Beginner → Intermediate: A 4-Week Study Path</h2>
       <ol class="resource-list">
         <li><strong>Week 1:</strong> Re-do TinyURL with 10× traffic; add abuse controls; set SLOs and alerts.</li>
-        <li><strong>Week 2:</strong> Design a messaging app. Cover ordering, delivery, <a href="/chapters/glossary.html#eventual-consistency">eventual consistency</a>, and read replicas.</li>
+        <li><strong>Week 2:</strong> Design a messaging app. Cover ordering, delivery, <a href="chapters/glossary.html#eventual-consistency">eventual consistency</a>, and read replicas.</li>
         <li><strong>Week 3:</strong> Design a news feed. Explore fanout, caching timelines, and ranking latency budgets.</li>
         <li><strong>Week 4:</strong> Add a passive region + DNS failover to one design; practice incident response (runbook).</li>
       </ol>

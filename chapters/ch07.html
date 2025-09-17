@@ -34,9 +34,9 @@
       <h1>Guided Practice — Designing a Simple System</h1>
       <p style="max-width:72ch;margin-top:.5rem">
         It’s time to put the pieces together. We’ll design a production-leaning **URL Shortener (TinyURL)** end to end. You’ll practice the workflow:
-        requirements → back-of-the-envelope estimations → APIs → storage and <a href="/chapters/glossary.html#index">indexes</a> →
-        <a href="/chapters/glossary.html#cache">caching</a> → <a href="/chapters/glossary.html#load-balancer">load balancing</a> →
-        <a href="/chapters/glossary.html#replication">replication</a> → <a href="/chapters/glossary.html#monitoring">observability</a>, with explicit trade-offs.
+        requirements → back-of-the-envelope estimations → APIs → storage and <a href="chapters/glossary.html#index">indexes</a> →
+        <a href="chapters/glossary.html#cache">caching</a> → <a href="chapters/glossary.html#load-balancer">load balancing</a> →
+        <a href="chapters/glossary.html#replication">replication</a> → <a href="chapters/glossary.html#monitoring">observability</a>, with explicit trade-offs.
       </p>
     </header>
 
@@ -87,7 +87,7 @@
       <h2 id="s72">7.2 Requirements Gathering</h2>
       <ul class="resource-list">
         <li><strong>Functional:</strong> Shorten a long URL → return short code. Redirect short code → original URL (HTTP 301/302). Optional: custom alias, expiration, click analytics.</li>
-        <li><strong>Non-functional:</strong> p95 redirect &lt; 50&nbsp;ms, 99.9% <a href="/chapters/glossary.html#availability">availability</a>, low cost per request, simple operations.</li>
+        <li><strong>Non-functional:</strong> p95 redirect &lt; 50&nbsp;ms, 99.9% <a href="chapters/glossary.html#availability">availability</a>, low cost per request, simple operations.</li>
         <li><strong>Traffic assumptions (example):</strong> 30M redirects/day (~350 RPS avg, 2–3× peaks); 1M new URLs/day (~12 RPS writes). Read-heavy system.</li>
         <li><strong>Constraints:</strong> Handle bursts gracefully; prevent abusive links; support https redirects.</li>
       </ul>
@@ -116,7 +116,7 @@
         <li><code>GET /api/stats/{short_code}</code> — (optional) click counts, last_accessed.</li>
       </ul>
       <p>
-        Authentication optional for basic service; rate limit by IP or API key to prevent abuse. Use <a href="/chapters/glossary.html#idempotency">idempotency</a> keys for POST requests to avoid duplicate records on retries.
+        Authentication optional for basic service; rate limit by IP or API key to prevent abuse. Use <a href="chapters/glossary.html#idempotency">idempotency</a> keys for POST requests to avoid duplicate records on retries.
       </p>
     </section>
 
@@ -177,7 +177,7 @@ clicks/{short_code}/{day} = { counts:{total, by_country:{...}} }</code></pre>
         <li>Edge cache check: if mapping is cached and valid → return 301/302 immediately.</li>
         <li>Otherwise hit app → Redis (<em>cache-aside</em>) for <code>short_code</code> → <code>long_url</code>.</li>
         <li>On miss, query DB, populate Redis (TTL ~1–7 days), optionally push to CDN for hot codes.</li>
-        <li>Return redirect; enqueue click metrics to a <a href="/chapters/glossary.html#queue">queue</a> for async processing.</li>
+        <li>Return redirect; enqueue click metrics to a <a href="chapters/glossary.html#queue">queue</a> for async processing.</li>
       </ol>
       <div class="callout success"><strong>Case study (≈180 words):</strong> Launch day brings a celebrity tweet with a short link. Traffic jumps to 20k RPS for that code. Because it’s cached at the edge and in Redis, app and DB load barely rise. A bug appears: expired links still redirect for a few minutes. Root cause: CDN TTL too long for expiring entries. Fix: use <em>cache key versioning</em> or <em>surrogate keys</em> that can be purged on expiration events. Lesson: choose TTLs per class of URL (permanent vs. temporary) and support explicit purge.</div>
     </section>
@@ -185,7 +185,7 @@ clicks/{short_code}/{day} = { counts:{total, by_country:{...}} }</code></pre>
     <section aria-labelledby="s78">
       <h2 id="s78">7.8 Write Path (Shorten)</h2>
       <ol class="resource-list">
-        <li>Client POSTs <code>{ url, custom_alias?, ttl? }</code> with an <a href="/chapters/glossary.html#idempotency">idempotency</a> key.</li>
+        <li>Client POSTs <code>{ url, custom_alias?, ttl? }</code> with an <a href="chapters/glossary.html#idempotency">idempotency</a> key.</li>
         <li>App validates URL (syntax, size cap), screens via safe-browsing (async if slow).</li>
         <li>Generate code (random or counter), ensure uniqueness, write to DB in transaction.</li>
         <li>Warm caches: set Redis entry; optionally prime CDN with <code>/{short_code}</code> → 301 hint to reduce cold starts.</li>
@@ -197,8 +197,8 @@ clicks/{short_code}/{day} = { counts:{total, by_country:{...}} }</code></pre>
     <section aria-labelledby="s79">
       <h2 id="s79">7.9 Reliability: Redundancy &amp; Failover</h2>
       <ul class="resource-list">
-        <li>Run multiple app instances behind a <a href="/chapters/glossary.html#load-balancer">load balancer</a> in at least two availability zones.</li>
-        <li>Redis: run a small cluster with replicas and automatic failover; degrade to DB on cache outage with <a href="/chapters/glossary.html#rate-limiting">rate limiting</a>.</li>
+        <li>Run multiple app instances behind a <a href="chapters/glossary.html#load-balancer">load balancer</a> in at least two availability zones.</li>
+        <li>Redis: run a small cluster with replicas and automatic failover; degrade to DB on cache outage with <a href="chapters/glossary.html#rate-limiting">rate limiting</a>.</li>
         <li>DB: primary with read replicas; regular backups and PITR. For multi-region, start with active–passive and DNS failover.</li>
         <li>Graceful degradation: if malware checker is down, still shorten but mark <em>pending scan</em> and block redirect on known-bad.</li>
       </ul>

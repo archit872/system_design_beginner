@@ -33,7 +33,7 @@
       <p class="badge" style="color:var(--muted);letter-spacing:.08em;">CHAPTER 3</p>
       <h1>Storage &amp; Databases Fundamentals</h1>
       <p style="max-width:72ch;margin-top:.5rem">
-        Data is your system’s memory. In this chapter you’ll learn why databases exist, how <strong><a href="/chapters/glossary.html#sql">SQL</a></strong> and <strong><a href="/chapters/glossary.html#nosql">NoSQL</a></strong> differ, how to model and query data effectively, and how <strong><a href="/chapters/glossary.html#replication">replication</a></strong> and <strong><a href="/chapters/glossary.html#consistency">consistency</a></strong> shape behavior in distributed systems. You’ll design a simple schema for a messaging app and reason about indexes, denormalization, and consistency levels.
+        Data is your system’s memory. In this chapter you’ll learn why databases exist, how <strong><a href="chapters/glossary.html#sql">SQL</a></strong> and <strong><a href="chapters/glossary.html#nosql">NoSQL</a></strong> differ, how to model and query data effectively, and how <strong><a href="chapters/glossary.html#replication">replication</a></strong> and <strong><a href="chapters/glossary.html#consistency">consistency</a></strong> shape behavior in distributed systems. You’ll design a simple schema for a messaging app and reason about indexes, denormalization, and consistency levels.
       </p>
     </header>
 
@@ -41,9 +41,9 @@
       <h2 id="objectives">Learning Objectives</h2>
       <ul class="resource-list">
         <li>Explain why applications need databases instead of flat files.</li>
-        <li>Differentiate <a href="/chapters/glossary.html#sql">SQL</a> vs. <a href="/chapters/glossary.html#nosql">NoSQL</a> and choose based on requirements.</li>
-        <li>Model data entities and relationships; use <a href="/chapters/glossary.html#index">indexes</a> to accelerate queries.</li>
-        <li>Describe <a href="/chapters/glossary.html#replication">replication</a> and <a href="/chapters/glossary.html#consistency">consistency</a> basics (read replicas, eventual consistency).</li>
+        <li>Differentiate <a href="chapters/glossary.html#sql">SQL</a> vs. <a href="chapters/glossary.html#nosql">NoSQL</a> and choose based on requirements.</li>
+        <li>Model data entities and relationships; use <a href="chapters/glossary.html#index">indexes</a> to accelerate queries.</li>
+        <li>Describe <a href="chapters/glossary.html#replication">replication</a> and <a href="chapters/glossary.html#consistency">consistency</a> basics (read replicas, eventual consistency).</li>
       </ul>
     </section>
 
@@ -75,16 +75,16 @@
     <section aria-labelledby="s31">
       <h2 id="s31">3.1 Why We Need Databases</h2>
       <p>
-        A database provides durable storage, concurrency control, query capabilities, and indexes. Flat files struggle with concurrent writes, partial failures, and complex queries across multiple dimensions. Databases implement <strong><a href="/chapters/glossary.html#acid">ACID</a></strong> properties (in relational systems) to ensure correctness under concurrent access and failures.
+        A database provides durable storage, concurrency control, query capabilities, and indexes. Flat files struggle with concurrent writes, partial failures, and complex queries across multiple dimensions. Databases implement <strong><a href="chapters/glossary.html#acid">ACID</a></strong> properties (in relational systems) to ensure correctness under concurrent access and failures.
       </p>
-      <div class="callout info"><strong>Analogy:</strong> A database is a well-run library: books (records) have catalog entries (indexes), rules for borrowing (<a href="/chapters/glossary.html#transaction">transactions</a>), and librarians (the engine) who help you find what you need fast.</div>
+      <div class="callout info"><strong>Analogy:</strong> A database is a well-run library: books (records) have catalog entries (indexes), rules for borrowing (<a href="chapters/glossary.html#transaction">transactions</a>), and librarians (the engine) who help you find what you need fast.</div>
       <div class="callout warn"><strong>Pitfall:</strong> Storing everything as blobs in object storage seems simple, until you need to filter “messages by user in the last 24&nbsp;hours with unread status.” Without indexing/query support, you reinvent a database badly.</div>
     </section>
 
     <section aria-labelledby="s32">
       <h2 id="s32">3.2 Relational Databases: Tables, Joins, Indexes</h2>
       <p>
-        Relational databases model data in tables with fixed <strong><a href="/chapters/glossary.html#schema">schema</a></strong>. Relationships are encoded via foreign keys and queried using <strong><a href="/chapters/glossary.html#join">joins</a></strong>. They excel at multi-entity queries and strong consistency. Indexes accelerate lookups by maintaining sorted structures (e.g., B-trees) on columns.
+        Relational databases model data in tables with fixed <strong><a href="chapters/glossary.html#schema">schema</a></strong>. Relationships are encoded via foreign keys and queried using <strong><a href="chapters/glossary.html#join">joins</a></strong>. They excel at multi-entity queries and strong consistency. Indexes accelerate lookups by maintaining sorted structures (e.g., B-trees) on columns.
       </p>
       <h3>Example: Messaging schema (SQL)</h3>
       <pre><code>users(id PK, username UNIQUE, created_at)
@@ -94,18 +94,18 @@ messages(id PK, conversation_id FK, sender_id FK, body, created_at, read_state)<
       <p>
         Typical queries: “latest 50 messages in a conversation,” “unread counts per conversation,” “members with role=admin.” Indexes: <code>(conversation_id, created_at DESC)</code> on <code>messages</code>, and <code>(user_id)</code> on <code>conversation_members</code>. These support pagination and membership lookups efficiently.
       </p>
-      <div class="callout danger"><strong>Trade-off:</strong> Highly normalized schemas reduce duplication but can require multiple joins, increasing <a href="/chapters/glossary.html#latency">latency</a> at scale. Strategic <a href="/chapters/glossary.html#denormalization">denormalization</a> can speed reads at the cost of write complexity.</div>
+      <div class="callout danger"><strong>Trade-off:</strong> Highly normalized schemas reduce duplication but can require multiple joins, increasing <a href="chapters/glossary.html#latency">latency</a> at scale. Strategic <a href="chapters/glossary.html#denormalization">denormalization</a> can speed reads at the cost of write complexity.</div>
     </section>
 
     <section aria-labelledby="s33">
       <h2 id="s33">3.3 NoSQL Basics: Key-Value, Document, Wide-Column</h2>
       <p>
-        <strong><a href="/chapters/glossary.html#nosql">NoSQL</a></strong> databases relax some relational guarantees for scale and flexibility. Common types:
+        <strong><a href="chapters/glossary.html#nosql">NoSQL</a></strong> databases relax some relational guarantees for scale and flexibility. Common types:
       </p>
       <ul class="resource-list">
-        <li><strong><a href="/chapters/glossary.html#key-value">Key-Value</a>:</strong> Fast lookups by key (e.g., Redis, DynamoDB core). Great for session data, caches.</li>
-        <li><strong><a href="/chapters/glossary.html#document-db">Document</a>:</strong> Store semi-structured JSON-like documents (e.g., MongoDB). Natural for evolving schemas and nested data.</li>
-        <li><strong><a href="/chapters/glossary.html#wide-column">Wide-Column</a>:</strong> Column families optimized for large, sparse datasets and sequential reads (e.g., Cassandra, HBase).</li>
+        <li><strong><a href="chapters/glossary.html#key-value">Key-Value</a>:</strong> Fast lookups by key (e.g., Redis, DynamoDB core). Great for session data, caches.</li>
+        <li><strong><a href="chapters/glossary.html#document-db">Document</a>:</strong> Store semi-structured JSON-like documents (e.g., MongoDB). Natural for evolving schemas and nested data.</li>
+        <li><strong><a href="chapters/glossary.html#wide-column">Wide-Column</a>:</strong> Column families optimized for large, sparse datasets and sequential reads (e.g., Cassandra, HBase).</li>
       </ul>
       <h3>Example: Messaging (Document)</h3>
       <pre><code>chat: {
@@ -115,7 +115,7 @@ messages(id PK, conversation_id FK, sender_id FK, body, created_at, read_state)<
   messages: [{id: 351, from:"u2", body:"hi", ts:...}, ...]
 }</code></pre>
       <p>
-        Reads become simple (<em>one doc</em>), but document size can grow. Large conversations may need <a href="/chapters/glossary.html#partitioning">partitioning</a> by time (e.g., monthly buckets) to avoid huge documents.
+        Reads become simple (<em>one doc</em>), but document size can grow. Large conversations may need <a href="chapters/glossary.html#partitioning">partitioning</a> by time (e.g., monthly buckets) to avoid huge documents.
       </p>
       <div class="callout success"><strong>Case study:</strong> A startup with small teams builds chat using a document DB to ship quickly. As groups exceed 500 users and messages scale, they partition conversation histories by month, add a secondary index on <code>ts</code>, and denormalize <code>lastRead</code> into a separate collection to keep hot docs small. This preserves developer speed while controlling read/write hot spots.</div>
     </section>
@@ -123,15 +123,15 @@ messages(id PK, conversation_id FK, sender_id FK, body, created_at, read_state)<
     <section aria-labelledby="s34">
       <h2 id="s34">3.4 Data Replication &amp; Consistency Trade-offs</h2>
       <p>
-        Replication creates additional copies of data to improve <a href="/chapters/glossary.html#availability">availability</a>, read throughput, and disaster recovery. Common topologies: single primary with read replicas; multi-leader; leaderless quorum. Consistency is how up-to-date and synchronized those replicas are.
+        Replication creates additional copies of data to improve <a href="chapters/glossary.html#availability">availability</a>, read throughput, and disaster recovery. Common topologies: single primary with read replicas; multi-leader; leaderless quorum. Consistency is how up-to-date and synchronized those replicas are.
       </p>
       <h3>Key Terms</h3>
       <ul class="resource-list">
-        <li><strong><a href="/chapters/glossary.html#eventual-consistency">Eventual consistency</a></strong> — replicas converge over time; reads may be stale.</li>
-        <li><strong><a href="/chapters/glossary.html#strong-consistency">Strong consistency</a></strong> — reads reflect the latest committed write.</li>
-        <li><strong><a href="/chapters/glossary.html#read-replica">Read replica</a></strong> — follower that serves reads; writes go to a leader.</li>
-        <li><strong><a href="/chapters/glossary.html#write-concern">Write concern</a></strong> — how many replicas must acknowledge a write.</li>
-        <li><strong><a href="/chapters/glossary.html#quorum">Quorum</a></strong> — majority subset used to ensure consistency in leaderless systems.</li>
+        <li><strong><a href="chapters/glossary.html#eventual-consistency">Eventual consistency</a></strong> — replicas converge over time; reads may be stale.</li>
+        <li><strong><a href="chapters/glossary.html#strong-consistency">Strong consistency</a></strong> — reads reflect the latest committed write.</li>
+        <li><strong><a href="chapters/glossary.html#read-replica">Read replica</a></strong> — follower that serves reads; writes go to a leader.</li>
+        <li><strong><a href="chapters/glossary.html#write-concern">Write concern</a></strong> — how many replicas must acknowledge a write.</li>
+        <li><strong><a href="chapters/glossary.html#quorum">Quorum</a></strong> — majority subset used to ensure consistency in leaderless systems.</li>
       </ul>
 
       <h3>Compare &amp; Contrast: SQL vs. NoSQL (beginner view)</h3>
@@ -179,7 +179,7 @@ messages(id PK, conversation_id FK, sender_id FK, body, created_at, read_state)<
       <h2 id="design-examples">Design Examples</h2>
       <h3>Example A: Unread counters</h3>
       <p>
-        Counting unread messages via a <em>join and count</em> on every page load is expensive. Instead, maintain a per-user counter updated on write and when a user reads. This is <a href="/chapters/glossary.html#denormalization">denormalization</a>: faster reads, slightly more complex writes with idempotency safeguards.
+        Counting unread messages via a <em>join and count</em> on every page load is expensive. Instead, maintain a per-user counter updated on write and when a user reads. This is <a href="chapters/glossary.html#denormalization">denormalization</a>: faster reads, slightly more complex writes with idempotency safeguards.
       </p>
       <h3>Example B: Search by username prefix</h3>
       <p>
@@ -188,7 +188,7 @@ messages(id PK, conversation_id FK, sender_id FK, body, created_at, read_state)<
 
       <h3>Mini Case Study: Migrating from single DB to replicas (≈200 words)</h3>
       <p>
-        A messaging app runs on one Postgres instance. As DAU grows, p95 read latency spikes during peak hours. The team enables a read replica and routes read-only endpoints (<code>GET /conversations</code>, <code>GET /messages</code>) to the replica. Immediately, CPU on the primary drops; p95 improves. New bug: after sending a message, the sender reloads and sometimes doesn’t see it because the replica lags. The team adopts a <em>read-your-writes</em> policy: the client that just wrote reads from the primary for 10 seconds, then returns to the replica. They also add <a href="/chapters/glossary.html#idempotency">idempotency</a> keys on message creation to prevent duplicates during retries. Outcome: improved read capacity with correct semantics for the writer. Lesson: replication changes consistency characteristics; user experience must account for lag explicitly.
+        A messaging app runs on one Postgres instance. As DAU grows, p95 read latency spikes during peak hours. The team enables a read replica and routes read-only endpoints (<code>GET /conversations</code>, <code>GET /messages</code>) to the replica. Immediately, CPU on the primary drops; p95 improves. New bug: after sending a message, the sender reloads and sometimes doesn’t see it because the replica lags. The team adopts a <em>read-your-writes</em> policy: the client that just wrote reads from the primary for 10 seconds, then returns to the replica. They also add <a href="chapters/glossary.html#idempotency">idempotency</a> keys on message creation to prevent duplicates during retries. Outcome: improved read capacity with correct semantics for the writer. Lesson: replication changes consistency characteristics; user experience must account for lag explicitly.
       </p>
     </section>
 

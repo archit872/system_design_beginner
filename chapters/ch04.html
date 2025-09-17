@@ -33,8 +33,8 @@
       <p class="badge" style="color:var(--muted);letter-spacing:.08em;">CHAPTER 4</p>
       <h1>Caching &amp; Performance Basics</h1>
       <p style="max-width:72ch;margin-top:.5rem">
-        Caching is a cornerstone of system performance. It stores results in faster storage to reduce repeated work and <strong><a href="/chapters/glossary.html#latency">latency</a></strong>. 
-        In this chapter, you’ll learn what caching is, where to place it—client, CDN, server—and the difficulties of <strong><a href="/chapters/glossary.html#cache-invalidation">cache invalidation</a></strong>. 
+        Caching is a cornerstone of system performance. It stores results in faster storage to reduce repeated work and <strong><a href="chapters/glossary.html#latency">latency</a></strong>. 
+        In this chapter, you’ll learn what caching is, where to place it—client, CDN, server—and the difficulties of <strong><a href="chapters/glossary.html#cache-invalidation">cache invalidation</a></strong>. 
         You’ll design caching strategies for a messaging app and analyze trade-offs.
       </p>
     </header>
@@ -42,10 +42,10 @@
     <section aria-labelledby="objectives">
       <h2 id="objectives">Learning Objectives</h2>
       <ul class="resource-list">
-        <li>Explain why caching improves <a href="/chapters/glossary.html#latency">latency</a> and throughput.</li>
+        <li>Explain why caching improves <a href="chapters/glossary.html#latency">latency</a> and throughput.</li>
         <li>Differentiate cache placement: browser, CDN, application, database.</li>
         <li>Apply caching to design scenarios (messaging app).</li>
-        <li>Identify and mitigate <a href="/chapters/glossary.html#cache-invalidation">invalidation</a> problems.</li>
+        <li>Identify and mitigate <a href="chapters/glossary.html#cache-invalidation">invalidation</a> problems.</li>
       </ul>
     </section>
 
@@ -79,7 +79,7 @@
     <section aria-labelledby="s41">
       <h2 id="s41">4.1 Introduction to Caching</h2>
       <p>
-        A <strong><a href="/chapters/glossary.html#cache">cache</a></strong> is a temporary store for frequently accessed data. It improves <a href="/chapters/glossary.html#latency">latency</a> and reduces backend load. 
+        A <strong><a href="chapters/glossary.html#cache">cache</a></strong> is a temporary store for frequently accessed data. It improves <a href="chapters/glossary.html#latency">latency</a> and reduces backend load. 
         Common strategies: <em>cache-aside</em> (application checks cache, falls back to DB), <em>write-through</em> (write to cache and DB), and <em>write-back</em> (write to cache, persist later).
       </p>
       <div class="callout info"><strong>Analogy:</strong> A fridge is a cache for food. Instead of cooking from scratch each time (DB), you open the fridge (cache) for quick access. But food may expire (stale cache).</div>
@@ -89,8 +89,8 @@
       <h2 id="s42">4.2 Browser Cache &amp; CDN Basics</h2>
       <p>
         Browsers cache static resources (CSS, JS, images) based on headers (<code>Cache-Control</code>, <code>ETag</code>). 
-        <strong><a href="/chapters/glossary.html#cdn">CDNs</a></strong> replicate content globally to serve users from nearby nodes. 
-        Both reduce round-trips and <a href="/chapters/glossary.html#latency">latency</a>.
+        <strong><a href="chapters/glossary.html#cdn">CDNs</a></strong> replicate content globally to serve users from nearby nodes. 
+        Both reduce round-trips and <a href="chapters/glossary.html#latency">latency</a>.
       </p>
       <h3>Example:</h3>
       <p>
@@ -103,7 +103,7 @@
     <section aria-labelledby="s43">
       <h2 id="s43">4.3 Server-side Caching with Redis/Memcached</h2>
       <p>
-        <strong><a href="/chapters/glossary.html#redis">Redis</a></strong> and <strong><a href="/chapters/glossary.html#memcached">Memcached</a></strong> are in-memory stores for high-speed caching. 
+        <strong><a href="chapters/glossary.html#redis">Redis</a></strong> and <strong><a href="chapters/glossary.html#memcached">Memcached</a></strong> are in-memory stores for high-speed caching. 
         Redis adds persistence, data structures (lists, sets), and replication. Memcached is simple and very fast for ephemeral key-value data.
       </p>
       <h3>Mini Case Study: Redis in a messaging app</h3>
@@ -112,7 +112,7 @@
         Reads hit Redis 90% of the time, reducing p95 to 40&nbsp;ms. A background job evicts old messages from Redis. 
         Trade-off: Cache invalidation when users delete/edit messages requires explicit updates to both Redis and DB.
       </p>
-      <div class="callout danger"><strong>Trade-off:</strong> Adding Redis improved latency but added <a href="/chapters/glossary.html#consistency">consistency</a> risks (stale data). The team built reconciliation jobs to ensure correctness.</div>
+      <div class="callout danger"><strong>Trade-off:</strong> Adding Redis improved latency but added <a href="chapters/glossary.html#consistency">consistency</a> risks (stale data). The team built reconciliation jobs to ensure correctness.</div>
     </section>
 
     <section aria-labelledby="s44">

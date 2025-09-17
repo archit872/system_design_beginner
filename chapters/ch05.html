@@ -33,18 +33,18 @@
       <p class="badge" style="color:var(--muted);letter-spacing:.08em;">CHAPTER 5</p>
       <h1>Scalability &amp; Load Handling</h1>
       <p style="max-width:72ch;margin-top:.5rem">
-        Scalability is the capability of a system to sustain more <strong><a href="/chapters/glossary.html#load">load</a></strong> with acceptable <strong><a href="/chapters/glossary.html#latency">latency</a></strong> and cost.  
-        In this chapter you’ll compare <strong><a href="/chapters/glossary.html#vertical-scaling">vertical</a></strong> vs. <strong><a href="/chapters/glossary.html#horizontal-scaling">horizontal</a></strong> scaling, learn how <strong><a href="/chapters/glossary.html#load-balancer">load balancers</a></strong> distribute traffic, decide when to keep services <strong><a href="/chapters/glossary.html#stateless">stateless</a></strong> or manage <strong><a href="/chapters/glossary.html#stateful">state</a></strong>, and practice a disciplined approach to finding and fixing <strong><a href="/chapters/glossary.html#bottleneck">bottlenecks</a></strong>.
+        Scalability is the capability of a system to sustain more <strong><a href="chapters/glossary.html#load">load</a></strong> with acceptable <strong><a href="chapters/glossary.html#latency">latency</a></strong> and cost.  
+        In this chapter you’ll compare <strong><a href="chapters/glossary.html#vertical-scaling">vertical</a></strong> vs. <strong><a href="chapters/glossary.html#horizontal-scaling">horizontal</a></strong> scaling, learn how <strong><a href="chapters/glossary.html#load-balancer">load balancers</a></strong> distribute traffic, decide when to keep services <strong><a href="chapters/glossary.html#stateless">stateless</a></strong> or manage <strong><a href="chapters/glossary.html#stateful">state</a></strong>, and practice a disciplined approach to finding and fixing <strong><a href="chapters/glossary.html#bottleneck">bottlenecks</a></strong>.
       </p>
     </header>
 
     <section aria-labelledby="objectives">
       <h2 id="objectives">Learning Objectives</h2>
       <ul class="resource-list">
-        <li>Differentiate <a href="/chapters/glossary.html#vertical-scaling">vertical</a> vs. <a href="/chapters/glossary.html#horizontal-scaling">horizontal</a> scaling and identify when to use each.</li>
+        <li>Differentiate <a href="chapters/glossary.html#vertical-scaling">vertical</a> vs. <a href="chapters/glossary.html#horizontal-scaling">horizontal</a> scaling and identify when to use each.</li>
         <li>Explain load balancing strategies (round robin, least connections, weighted, health checks).</li>
-        <li>Contrast <a href="/chapters/glossary.html#stateless">stateless</a> vs. <a href="/chapters/glossary.html#stateful">stateful</a> services and session handling.</li>
-        <li>Apply a methodical bottleneck analysis using <a href="/chapters/glossary.html#sli">SLIs</a> and tracing.</li>
+        <li>Contrast <a href="chapters/glossary.html#stateless">stateless</a> vs. <a href="chapters/glossary.html#stateful">stateful</a> services and session handling.</li>
+        <li>Apply a methodical bottleneck analysis using <a href="chapters/glossary.html#sli">SLIs</a> and tracing.</li>
       </ul>
     </section>
 
@@ -84,8 +84,8 @@
     <section aria-labelledby="s51">
       <h2 id="s51">5.1 Scaling Basics: Vertical vs. Horizontal</h2>
       <p>
-        <strong><a href="/chapters/glossary.html#vertical-scaling">Vertical scaling</a></strong> means adding more resources to an instance (CPU, RAM). It’s fast to implement and great early on.  
-        <strong><a href="/chapters/glossary.html#horizontal-scaling">Horizontal scaling</a></strong> means adding more instances and distributing load. It improves fault isolation and capacity but requires handling shared state, coordination, and <a href="/chapters/glossary.html#idempotency">idempotency</a>.
+        <strong><a href="chapters/glossary.html#vertical-scaling">Vertical scaling</a></strong> means adding more resources to an instance (CPU, RAM). It’s fast to implement and great early on.  
+        <strong><a href="chapters/glossary.html#horizontal-scaling">Horizontal scaling</a></strong> means adding more instances and distributing load. It improves fault isolation and capacity but requires handling shared state, coordination, and <a href="chapters/glossary.html#idempotency">idempotency</a>.
       </p>
       <h3>Compare &amp; Contrast</h3>
       <table style="width:100%;border-collapse:collapse">
@@ -105,7 +105,7 @@
     <section aria-labelledby="s52">
       <h2 id="s52">5.2 Load Balancers Explained</h2>
       <p>
-        A <strong><a href="/chapters/glossary.html#load-balancer">load balancer</a></strong> sits between clients and servers, routing traffic using policies and <em>health checks</em>.  
+        A <strong><a href="chapters/glossary.html#load-balancer">load balancer</a></strong> sits between clients and servers, routing traffic using policies and <em>health checks</em>.  
         Common algorithms:
       </p>
       <ul class="resource-list">
@@ -115,7 +115,7 @@
         <li><strong>IP Hash / Sticky Sessions:</strong> Same client to same instance (use sparingly; hides state coupling).</li>
       </ul>
       <p>
-        Health checks (HTTP/TCP) remove unhealthy nodes. <strong><a href="/chapters/glossary.html#circuit-breaker">Circuit breakers</a></strong> shed load from failing dependencies to protect the whole.
+        Health checks (HTTP/TCP) remove unhealthy nodes. <strong><a href="chapters/glossary.html#circuit-breaker">Circuit breakers</a></strong> shed load from failing dependencies to protect the whole.
       </p>
       <div class="callout danger"><strong>Trade-off:</strong> Sticky sessions can mask hidden state. Prefer external session stores so you can freely add/remove instances.</div>
     </section>
@@ -123,13 +123,13 @@
     <section aria-labelledby="s53">
       <h2 id="s53">5.3 Stateless vs. Stateful Services</h2>
       <p>
-        <strong><a href="/chapters/glossary.html#stateless">Stateless</a></strong> services keep no user-specific state in memory between requests beyond short-lived caches; any instance can serve any request.  
-        <strong><a href="/chapters/glossary.html#stateful">Stateful</a></strong> services retain state (sessions, in-memory rooms). They may require affinity or coordination.
+        <strong><a href="chapters/glossary.html#stateless">Stateless</a></strong> services keep no user-specific state in memory between requests beyond short-lived caches; any instance can serve any request.  
+        <strong><a href="chapters/glossary.html#stateful">Stateful</a></strong> services retain state (sessions, in-memory rooms). They may require affinity or coordination.
       </p>
       <h3>Session Strategies</h3>
       <ul class="resource-list">
         <li><strong>Token-based (JWT):</strong> Encodes session state in a signed token; servers validate without storing.</li>
-        <li><strong>Central session store:</strong> Keep session data in <a href="/chapters/glossary.html#redis">Redis</a> or DB; any instance can fetch.</li>
+        <li><strong>Central session store:</strong> Keep session data in <a href="chapters/glossary.html#redis">Redis</a> or DB; any instance can fetch.</li>
         <li><strong>Sticky sessions:</strong> Route a client to the same instance; simplest but fragile.</li>
       </ul>
       <div class="callout success"><strong>Case study:</strong> A web shop moved from PHP sessions on disk (stateful) to Redis-backed sessions. This enabled horizontal scale-out from 2 to 12 instances during sales without user logouts during deploys.</div>
@@ -138,14 +138,14 @@
     <section aria-labelledby="s54">
       <h2 id="s54">5.4 Identifying &amp; Resolving Bottlenecks</h2>
       <p>
-        Treat performance as an investigation. Start with user experience (<strong><a href="/chapters/glossary.html#sli">SLIs</a></strong>: p95 latency, error rate), then drill down using tracing and profiling. Use the <em>80/20 rule</em>: a few endpoints dominate pain.
+        Treat performance as an investigation. Start with user experience (<strong><a href="chapters/glossary.html#sli">SLIs</a></strong>: p95 latency, error rate), then drill down using tracing and profiling. Use the <em>80/20 rule</em>: a few endpoints dominate pain.
       </p>
       <ol class="resource-list">
         <li><strong>Observe:</strong> Establish baseline SLIs; capture p50/p95, throughput, and saturation (CPU, DB connections).</li>
         <li><strong>Localize:</strong> Use tracing to find slow spans (DB, cache, external API).</li>
         <li><strong>Hypothesize:</strong> Form theories (N+1 queries? cache misses? lock contention?).</li>
         <li><strong>Change:</strong> Apply smallest fix first (index, caching, batch writes, queue).</li>
-        <li><strong>Verify:</strong> Re-measure; watch for regressions and <a href="/chapters/glossary.html#tail-latency">tail latency</a>.</li>
+        <li><strong>Verify:</strong> Re-measure; watch for regressions and <a href="chapters/glossary.html#tail-latency">tail latency</a>.</li>
       </ol>
 
       <h3>Example A: The hidden N+1</h3>
@@ -155,12 +155,12 @@
 
       <h3>Example B: Write amplification</h3>
       <p>
-        A counter updates synchronously on every request. Switch to batched updates via a <a href="/chapters/glossary.html#queue">queue</a>; make reads hit cache. Throughput doubles; DB write pressure halves.
+        A counter updates synchronously on every request. Switch to batched updates via a <a href="chapters/glossary.html#queue">queue</a>; make reads hit cache. Throughput doubles; DB write pressure halves.
       </p>
 
       <h3>Mini Case Study: Flash sale stability (≈200 words)</h3>
       <p>
-        An e-commerce site runs a 10-minute flash sale. Traffic spikes 20×; the site stalls. Metrics show CPU okay, but DB connections at max and queueing. Traces reveal cart API causing heavy writes and locks. The team implements three changes in sequence: (1) <em>read replica routing</em> for product detail reads; (2) <em>cart write coalescing</em>—batch multiple adds within a 200&nbsp;ms window; (3) <em>optimistic concurrency</em> with retry for inventory decrements instead of serializable transactions. They also add <a href="/chapters/glossary.html#rate-limiting">rate limiting</a> on checkout to flatten bursts and a <a href="/chapters/glossary.html#circuit-breaker">circuit breaker</a> on the recommendations service so cart actions don’t depend on it. Next sale: p95 checkout under 450&nbsp;ms, no outage. Lesson: load handling is systemic—tune <em>reads</em>, <em>writes</em>, and <em>dependencies</em>, not just servers.</p>
+        An e-commerce site runs a 10-minute flash sale. Traffic spikes 20×; the site stalls. Metrics show CPU okay, but DB connections at max and queueing. Traces reveal cart API causing heavy writes and locks. The team implements three changes in sequence: (1) <em>read replica routing</em> for product detail reads; (2) <em>cart write coalescing</em>—batch multiple adds within a 200&nbsp;ms window; (3) <em>optimistic concurrency</em> with retry for inventory decrements instead of serializable transactions. They also add <a href="chapters/glossary.html#rate-limiting">rate limiting</a> on checkout to flatten bursts and a <a href="chapters/glossary.html#circuit-breaker">circuit breaker</a> on the recommendations service so cart actions don’t depend on it. Next sale: p95 checkout under 450&nbsp;ms, no outage. Lesson: load handling is systemic—tune <em>reads</em>, <em>writes</em>, and <em>dependencies</em>, not just servers.</p>
     </section>
 
     <section aria-labelledby="resources">

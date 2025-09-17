@@ -34,7 +34,7 @@
       <h1>Reliability &amp; Fault Tolerance</h1>
       <p style="max-width:72ch;margin-top:.5rem">
         Reliability means your system works when users need it. Fault tolerance is the art of surviving failures gracefully.  
-        In this chapter you’ll learn <strong><a href="/chapters/glossary.html#redundancy">redundancy</a></strong> techniques, <strong><a href="/chapters/glossary.html#failover">failover</a></strong> and disaster recovery, and the basics of <strong><a href="/chapters/glossary.html#monitoring">monitoring</a></strong> and alerting.  
+        In this chapter you’ll learn <strong><a href="chapters/glossary.html#redundancy">redundancy</a></strong> techniques, <strong><a href="chapters/glossary.html#failover">failover</a></strong> and disaster recovery, and the basics of <strong><a href="chapters/glossary.html#monitoring">monitoring</a></strong> and alerting.  
         You’ll adapt your scalable web app to add resilience against crashes and outages.
       </p>
     </header>
@@ -43,8 +43,8 @@
       <h2 id="objectives">Learning Objectives</h2>
       <ul class="resource-list">
         <li>Identify common failure modes in distributed systems.</li>
-        <li>Explain <a href="/chapters/glossary.html#replication">replication</a>, <a href="/chapters/glossary.html#redundancy">redundancy</a>, and <a href="/chapters/glossary.html#backup">backups</a>.</li>
-        <li>Describe <a href="/chapters/glossary.html#failover">failover</a> and disaster recovery basics.</li>
+        <li>Explain <a href="chapters/glossary.html#replication">replication</a>, <a href="chapters/glossary.html#redundancy">redundancy</a>, and <a href="chapters/glossary.html#backup">backups</a>.</li>
+        <li>Describe <a href="chapters/glossary.html#failover">failover</a> and disaster recovery basics.</li>
         <li>Apply monitoring and alerting for critical SLIs.</li>
       </ul>
     </section>
@@ -86,8 +86,8 @@
     <section aria-labelledby="s62">
       <h2 id="s62">6.2 Replication, Redundancy &amp; Backups</h2>
       <p>
-        <strong><a href="/chapters/glossary.html#replication">Replication</a></strong> ensures multiple copies of data. <strong><a href="/chapters/glossary.html#redundancy">Redundancy</a></strong> duplicates components (servers, networks) so one can fail without outage.  
-        <strong><a href="/chapters/glossary.html#backup">Backups</a></strong> protect against corruption or deletion.
+        <strong><a href="chapters/glossary.html#replication">Replication</a></strong> ensures multiple copies of data. <strong><a href="chapters/glossary.html#redundancy">Redundancy</a></strong> duplicates components (servers, networks) so one can fail without outage.  
+        <strong><a href="chapters/glossary.html#backup">Backups</a></strong> protect against corruption or deletion.
       </p>
       <h3>Compare &amp; Contrast</h3>
       <table style="width:100%;border-collapse:collapse">
@@ -104,11 +104,11 @@
     <section aria-labelledby="s63">
       <h2 id="s63">6.3 Fault-Tolerant Design Patterns</h2>
       <ul class="resource-list">
-        <li><strong><a href="/chapters/glossary.html#failover">Failover</a>:</strong> Automatic switch to replica/standby on failure.</li>
-        <li><strong><a href="/chapters/glossary.html#graceful-degradation">Graceful degradation</a>:</strong> Offer limited service when dependencies fail (e.g., show cached timeline without live updates).</li>
-        <li><strong><a href="/chapters/glossary.html#retry">Retries with backoff</a>:</strong> Retry transient failures, but avoid thundering herd.</li>
-        <li><strong><a href="/chapters/glossary.html#circuit-breaker">Circuit breaker</a>:</strong> Cut traffic to failing dependency, return fallback.</li>
-        <li><strong><a href="/chapters/glossary.html#bulkhead">Bulkheads</a>:</strong> Isolate components to limit cascading failures.</li>
+        <li><strong><a href="chapters/glossary.html#failover">Failover</a>:</strong> Automatic switch to replica/standby on failure.</li>
+        <li><strong><a href="chapters/glossary.html#graceful-degradation">Graceful degradation</a>:</strong> Offer limited service when dependencies fail (e.g., show cached timeline without live updates).</li>
+        <li><strong><a href="chapters/glossary.html#retry">Retries with backoff</a>:</strong> Retry transient failures, but avoid thundering herd.</li>
+        <li><strong><a href="chapters/glossary.html#circuit-breaker">Circuit breaker</a>:</strong> Cut traffic to failing dependency, return fallback.</li>
+        <li><strong><a href="chapters/glossary.html#bulkhead">Bulkheads</a>:</strong> Isolate components to limit cascading failures.</li>
       </ul>
       <div class="callout danger"><strong>Trade-off:</strong> Too aggressive retries can overload a recovering service. Design with exponential backoff and jitter.</div>
     </section>
@@ -116,9 +116,9 @@
     <section aria-labelledby="s64">
       <h2 id="s64">6.4 Monitoring, Logging &amp; Alerts Basics</h2>
       <p>
-        <strong><a href="/chapters/glossary.html#monitoring">Monitoring</a></strong> collects metrics (CPU, latency, error rate).  
-        <strong><a href="/chapters/glossary.html#logging">Logging</a></strong> records detailed events.  
-        <strong><a href="/chapters/glossary.html#alerting">Alerting</a></strong> notifies humans when <a href="/chapters/glossary.html#slo">SLOs</a> are violated.
+        <strong><a href="chapters/glossary.html#monitoring">Monitoring</a></strong> collects metrics (CPU, latency, error rate).  
+        <strong><a href="chapters/glossary.html#logging">Logging</a></strong> records detailed events.  
+        <strong><a href="chapters/glossary.html#alerting">Alerting</a></strong> notifies humans when <a href="chapters/glossary.html#slo">SLOs</a> are violated.
       </p>
       <h3>Key Metrics (Golden Signals)</h3>
       <ul class="resource-list">
