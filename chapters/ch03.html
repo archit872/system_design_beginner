@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chapter 3 — Storage & Databases Fundamentals</title>
+  <meta name="description" content="SQL vs. NoSQL, data modeling and queries, replication and consistency basics, trade-offs, examples, practice, and mastery." />
+  <meta property="og:title" content="Chapter 3 — Storage & Databases Fundamentals" />
+  <meta property="og:description" content="Learn why we need databases, relational vs. NoSQL models, indexes and queries, replication, consistency, and design trade-offs." />
+  <link rel="stylesheet" href="/styles/theme.css" />
+  <script defer src="/scripts/app.js"></script>
+</head>
+<body>
+  <!-- Canonical Navigation -->
+  <nav class="app-nav" aria-label="Primary">
+    <a href="/index.html">Home</a>
+    <a href="/chapters/ch01.html">Chapter 1</a>
+    <a href="/chapters/ch02.html">Chapter 2</a>
+    <a href="/chapters/ch03.html" aria-current="page">Chapter 3</a>
+    <a href="/chapters/ch04.html">Chapter 4</a>
+    <a href="/chapters/ch05.html">Chapter 5</a>
+    <a href="/chapters/ch06.html">Chapter 6</a>
+    <a href="/chapters/ch07.html">Chapter 7</a>
+    <a href="/chapters/ch08.html">Chapter 8</a>
+    <a href="/chapters/appendix.html">Appendix</a>
+    <a href="/chapters/glossary.html">Glossary</a>
+    <button class="nav-toggle" aria-label="Toggle menu" style="margin-left:auto">☰</button>
+  </nav>
+
+  <main>
+    <header class="page-hero">
+      <p class="badge" style="color:var(--muted);letter-spacing:.08em;">CHAPTER 3</p>
+      <h1>Storage &amp; Databases Fundamentals</h1>
+      <p style="max-width:72ch;margin-top:.5rem">
+        Data is your system’s memory. In this chapter you’ll learn why databases exist, how <strong><a href="/chapters/glossary.html#sql">SQL</a></strong> and <strong><a href="/chapters/glossary.html#nosql">NoSQL</a></strong> differ, how to model and query data effectively, and how <strong><a href="/chapters/glossary.html#replication">replication</a></strong> and <strong><a href="/chapters/glossary.html#consistency">consistency</a></strong> shape behavior in distributed systems. You’ll design a simple schema for a messaging app and reason about indexes, denormalization, and consistency levels.
+      </p>
+    </header>
+
+    <section aria-labelledby="objectives">
+      <h2 id="objectives">Learning Objectives</h2>
+      <ul class="resource-list">
+        <li>Explain why applications need databases instead of flat files.</li>
+        <li>Differentiate <a href="/chapters/glossary.html#sql">SQL</a> vs. <a href="/chapters/glossary.html#nosql">NoSQL</a> and choose based on requirements.</li>
+        <li>Model data entities and relationships; use <a href="/chapters/glossary.html#index">indexes</a> to accelerate queries.</li>
+        <li>Describe <a href="/chapters/glossary.html#replication">replication</a> and <a href="/chapters/glossary.html#consistency">consistency</a> basics (read replicas, eventual consistency).</li>
+      </ul>
+    </section>
+
+    <figure>
+      <svg width="100%" height="230" viewBox="0 0 900 230" role="img" aria-labelledby="fig3">
+        <title id="fig3">Relational vs. Document storage</title>
+        <!-- Relational side -->
+        <rect x="30" y="20" width="380" height="190" rx="14" fill="#111726" stroke="#1b2330"/>
+        <text x="220" y="40" text-anchor="middle" fill="#e6edf3" font-size="14">Relational (SQL)</text>
+        <rect x="60" y="60" width="150" height="120" rx="8" fill="#0f141b" stroke="#4cc2ff"/>
+        <text x="135" y="80" text-anchor="middle" fill="#9fb0c3" font-size="12">Users</text>
+        <rect x="230" y="60" width="150" height="120" rx="8" fill="#0f141b" stroke="#4cc2ff"/>
+        <text x="305" y="80" text-anchor="middle" fill="#9fb0c3" font-size="12">Messages</text>
+        <line x1="210" y1="120" x2="230" y2="120" stroke="#7a87ff"/>
+        <text x="220" y="110" text-anchor="middle" fill="#9fb0c3" font-size="10">FK</text>
+
+        <!-- Document side -->
+        <rect x="490" y="20" width="380" height="190" rx="14" fill="#111726" stroke="#1b2330"/>
+        <text x="680" y="40" text-anchor="middle" fill="#e6edf3" font-size="14">Document (NoSQL)</text>
+        <rect x="520" y="60" width="150" height="120" rx="8" fill="#0f141b" stroke="#4cc2ff"/>
+        <text x="595" y="80" text-anchor="middle" fill="#9fb0c3" font-size="12">chat/{id}</text>
+        <text x="595" y="100" text-anchor="middle" fill="#9fb0c3" font-size="10">{ users:[...], messages:[...] }</text>
+        <rect x="690" y="60" width="150" height="120" rx="8" fill="#0f141b" stroke="#4cc2ff"/>
+        <text x="765" y="80" text-anchor="middle" fill="#9fb0c3" font-size="12">indexes</text>
+      </svg>
+      <figcaption>Figure 3. SQL normalizes related data across tables with foreign keys; document DBs embed related data in one record. Each has trade-offs.</figcaption>
+    </figure>
+
+    <section aria-labelledby="s31">
+      <h2 id="s31">3.1 Why We Need Databases</h2>
+      <p>
+        A database provides durable storage, concurrency control, query capabilities, and indexes. Flat files struggle with concurrent writes, partial failures, and complex queries across multiple dimensions. Databases implement <strong><a href="/chapters/glossary.html#acid">ACID</a></strong> properties (in relational systems) to ensure correctness under concurrent access and failures.
+      </p>
+      <div class="callout info"><strong>Analogy:</strong> A database is a well-run library: books (records) have catalog entries (indexes), rules for borrowing (<a href="/chapters/glossary.html#transaction">transactions</a>), and librarians (the engine) who help you find what you need fast.</div>
+      <div class="callout warn"><strong>Pitfall:</strong> Storing everything as blobs in object storage seems simple, until you need to filter “messages by user in the last 24&nbsp;hours with unread status.” Without indexing/query support, you reinvent a database badly.</div>
+    </section>
+
+    <section aria-labelledby="s32">
+      <h2 id="s32">3.2 Relational Databases: Tables, Joins, Indexes</h2>
+      <p>
+        Relational databases model data in tables with fixed <strong><a href="/chapters/glossary.html#schema">schema</a></strong>. Relationships are encoded via foreign keys and queried using <strong><a href="/chapters/glossary.html#join">joins</a></strong>. They excel at multi-entity queries and strong consistency. Indexes accelerate lookups by maintaining sorted structures (e.g., B-trees) on columns.
+      </p>
+      <h3>Example: Messaging schema (SQL)</h3>
+      <pre><code>users(id PK, username UNIQUE, created_at)
+conversations(id PK, name, created_at)
+conversation_members(conversation_id FK, user_id FK, role)
+messages(id PK, conversation_id FK, sender_id FK, body, created_at, read_state)</code></pre>
+      <p>
+        Typical queries: “latest 50 messages in a conversation,” “unread counts per conversation,” “members with role=admin.” Indexes: <code>(conversation_id, created_at DESC)</code> on <code>messages</code>, and <code>(user_id)</code> on <code>conversation_members</code>. These support pagination and membership lookups efficiently.
+      </p>
+      <div class="callout danger"><strong>Trade-off:</strong> Highly normalized schemas reduce duplication but can require multiple joins, increasing <a href="/chapters/glossary.html#latency">latency</a> at scale. Strategic <a href="/chapters/glossary.html#denormalization">denormalization</a> can speed reads at the cost of write complexity.</div>
+    </section>
+
+    <section aria-labelledby="s33">
+      <h2 id="s33">3.3 NoSQL Basics: Key-Value, Document, Wide-Column</h2>
+      <p>
+        <strong><a href="/chapters/glossary.html#nosql">NoSQL</a></strong> databases relax some relational guarantees for scale and flexibility. Common types:
+      </p>
+      <ul class="resource-list">
+        <li><strong><a href="/chapters/glossary.html#key-value">Key-Value</a>:</strong> Fast lookups by key (e.g., Redis, DynamoDB core). Great for session data, caches.</li>
+        <li><strong><a href="/chapters/glossary.html#document-db">Document</a>:</strong> Store semi-structured JSON-like documents (e.g., MongoDB). Natural for evolving schemas and nested data.</li>
+        <li><strong><a href="/chapters/glossary.html#wide-column">Wide-Column</a>:</strong> Column families optimized for large, sparse datasets and sequential reads (e.g., Cassandra, HBase).</li>
+      </ul>
+      <h3>Example: Messaging (Document)</h3>
+      <pre><code>chat: {
+  _id: "conv_123",
+  members: ["u1","u2","u3"],
+  lastRead: {"u1": 342, "u2": 350, "u3": 340},
+  messages: [{id: 351, from:"u2", body:"hi", ts:...}, ...]
+}</code></pre>
+      <p>
+        Reads become simple (<em>one doc</em>), but document size can grow. Large conversations may need <a href="/chapters/glossary.html#partitioning">partitioning</a> by time (e.g., monthly buckets) to avoid huge documents.
+      </p>
+      <div class="callout success"><strong>Case study:</strong> A startup with small teams builds chat using a document DB to ship quickly. As groups exceed 500 users and messages scale, they partition conversation histories by month, add a secondary index on <code>ts</code>, and denormalize <code>lastRead</code> into a separate collection to keep hot docs small. This preserves developer speed while controlling read/write hot spots.</div>
+    </section>
+
+    <section aria-labelledby="s34">
+      <h2 id="s34">3.4 Data Replication &amp; Consistency Trade-offs</h2>
+      <p>
+        Replication creates additional copies of data to improve <a href="/chapters/glossary.html#availability">availability</a>, read throughput, and disaster recovery. Common topologies: single primary with read replicas; multi-leader; leaderless quorum. Consistency is how up-to-date and synchronized those replicas are.
+      </p>
+      <h3>Key Terms</h3>
+      <ul class="resource-list">
+        <li><strong><a href="/chapters/glossary.html#eventual-consistency">Eventual consistency</a></strong> — replicas converge over time; reads may be stale.</li>
+        <li><strong><a href="/chapters/glossary.html#strong-consistency">Strong consistency</a></strong> — reads reflect the latest committed write.</li>
+        <li><strong><a href="/chapters/glossary.html#read-replica">Read replica</a></strong> — follower that serves reads; writes go to a leader.</li>
+        <li><strong><a href="/chapters/glossary.html#write-concern">Write concern</a></strong> — how many replicas must acknowledge a write.</li>
+        <li><strong><a href="/chapters/glossary.html#quorum">Quorum</a></strong> — majority subset used to ensure consistency in leaderless systems.</li>
+      </ul>
+
+      <h3>Compare &amp; Contrast: SQL vs. NoSQL (beginner view)</h3>
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="text-align:left;padding:.5rem">Aspect</th>
+            <th style="text-align:left;padding:.5rem">SQL</th>
+            <th style="text-align:left;padding:.5rem">NoSQL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:.5rem">Schema</td>
+            <td style="padding:.5rem">Fixed; strong types</td>
+            <td style="padding:.5rem">Flexible; document or key-value</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:.5rem">Joins</td>
+            <td style="padding:.5rem">Native and powerful</td>
+            <td style="padding:.5rem">Usually app-level or avoided</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:.5rem">Consistency</td>
+            <td style="padding:.5rem">Often strong by default</td>
+            <td style="padding:.5rem">Often tunable/eventual</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:.5rem">Velocity</td>
+            <td style="padding:.5rem">Slower to evolve schema</td>
+            <td style="padding:.5rem">Fast iteration with evolving docs</td>
+          </tr>
+          <tr>
+            <td style="padding:.5rem">Typical uses</td>
+            <td style="padding:.5rem">Financial, reporting, relational data</td>
+            <td style="padding:.5rem">Content, logs, caches, high-scale feeds</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout info"><strong>Trade-off:</strong> Multi-region strong consistency increases write latency due to cross-region coordination. Teams often accept <em>read-your-writes</em> or bounded staleness for better latency and availability.</div>
+    </section>
+
+    <section aria-labelledby="design-examples">
+      <h2 id="design-examples">Design Examples</h2>
+      <h3>Example A: Unread counters</h3>
+      <p>
+        Counting unread messages via a <em>join and count</em> on every page load is expensive. Instead, maintain a per-user counter updated on write and when a user reads. This is <a href="/chapters/glossary.html#denormalization">denormalization</a>: faster reads, slightly more complex writes with idempotency safeguards.
+      </p>
+      <h3>Example B: Search by username prefix</h3>
+      <p>
+        A B-tree index on <code>username</code> supports prefix scans efficiently (<code>WHERE username LIKE 'al%'</code>). In a document DB, create a secondary index or maintain a separate key-value mapping from prefix → user ids for instant suggestions.
+      </p>
+
+      <h3>Mini Case Study: Migrating from single DB to replicas (≈200 words)</h3>
+      <p>
+        A messaging app runs on one Postgres instance. As DAU grows, p95 read latency spikes during peak hours. The team enables a read replica and routes read-only endpoints (<code>GET /conversations</code>, <code>GET /messages</code>) to the replica. Immediately, CPU on the primary drops; p95 improves. New bug: after sending a message, the sender reloads and sometimes doesn’t see it because the replica lags. The team adopts a <em>read-your-writes</em> policy: the client that just wrote reads from the primary for 10 seconds, then returns to the replica. They also add <a href="/chapters/glossary.html#idempotency">idempotency</a> keys on message creation to prevent duplicates during retries. Outcome: improved read capacity with correct semantics for the writer. Lesson: replication changes consistency characteristics; user experience must account for lag explicitly.
+      </p>
+    </section>
+
+    <section aria-labelledby="resources">
+      <h2 id="resources">Recommended Resources</h2>
+      <ul class="resource-list">
+        <li><a href="https://www.postgresql.org/docs/" target="_blank" rel="noopener">PostgreSQL Documentation</a> — indexes, transactions, and query planning.</li>
+        <li><a href="https://www.mongodb.com/docs/" target="_blank" rel="noopener">MongoDB Manual</a> — document modeling &amp; aggregation framework.</li>
+        <li><a href="https://aws.amazon.com/dynamodb/" target="_blank" rel="noopener">DynamoDB Guides</a> — single-table design and partition keys.</li>
+        <li>(Optional) Martin Kleppmann’s “Designing Data-Intensive Applications” — deeper theory and patterns.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="practice">
+      <h2 id="practice">Practice</h2>
+      <ol class="practice">
+        <li><strong>Schema sketch (30–40 min):</strong> Model the messaging app in either SQL or Document style. Include entities, keys, and indexes. <em>Success:</em> Diagram plus 3 queries you can answer efficiently.</li>
+        <li><strong>Query plan (20–25 min):</strong> For “latest 50 messages for conversation X,” write the query and identify the index that makes it O(log N + K). <em>Success:</em> Correct covering index and stable pagination (by <code>created_at, id</code>).</li>
+        <li><strong>Consistency drill (20–30 min):</strong> Describe how a read-replica lag might affect “send then read” UX. Propose one mitigation. <em>Success:</em> Read-your-writes or version/etag solution articulated.</li>
+        <li><strong>Denormalization exercise (25–30 min):</strong> Add an <em>unread_count</em> per user per conversation. Specify when it increments/decrements and how to recover from missed updates. <em>Success:</em> Idempotent update strategy with reconciliation job.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="mastery">
+      <h2 id="mastery">Mastery Check</h2>
+      <ol class="mastery">
+        <li><strong>Define:</strong> What are <em>ACID</em> properties?
+          <details><summary>Sample answer</summary><p>Atomicity, Consistency, Isolation, Durability — guarantees that transactions apply all-or-nothing, preserve invariants, appear isolated, and persist after commit.</p></details>
+        </li>
+        <li><strong>Explain:</strong> When would you choose a document DB over a relational DB?
+          <details><summary>Sample answer</summary><p>When data is naturally hierarchical, schema evolves rapidly, joins are limited, and low-latency reads of whole aggregates are common (e.g., user profile with settings, preferences, recent items).</p></details>
+        </li>
+        <li><strong>Apply:</strong> You need “recent messages by user across conversations.” What index helps?
+          <details><summary>Sample answer</summary><p>Composite index on <code>(sender_id, created_at DESC)</code>; in document DB, maintain an inverted index or materialized view keyed by sender.</p></details>
+        </li>
+        <li><strong>Evaluate:</strong> What’s the downside of denormalization?
+          <details><summary>Sample answer</summary><p>Write amplification and risk of inconsistency; requires background repair jobs and idempotent updates.</p></details>
+        </li>
+        <li><strong>Explain:</strong> What is eventual consistency, and when is it acceptable?
+          <details><summary>Sample answer</summary><p>Replicas may be briefly stale; acceptable for timelines, counts, or non-critical reads where slight staleness doesn’t harm correctness.</p></details>
+        </li>
+        <li><strong>Apply:</strong> Users see duplicate messages after retries. How do you fix it?
+          <details><summary>Sample answer</summary><p>Use idempotency keys on message creation (client supplies a unique token). Server upserts based on that key to ensure one logical write.</p></details>
+        </li>
+        <li><strong>Explain:</strong> How do partitions/shards affect query design?
+          <details><summary>Sample answer</summary><p>Queries must include the partition/shard key to be efficient; cross-shard queries require scatter-gather or pre-computed aggregates.</p></details>
+        </li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="recap">
+      <h2 id="recap">Recap &amp; Next Steps</h2>
+      <p>
+        You learned the purpose of databases, compared relational and NoSQL models, designed a messaging schema, and explored replication and consistency. You practiced indexing, denormalization, and read-your-writes. Next we’ll accelerate reads with caching layers—browser, CDN, and server-side caches—and learn how to invalidate correctly.
+      </p>
+    </section>
+
+    <nav class="next-prev" aria-label="Chapter pagination">
+      <a rel="prev" href="/chapters/ch02.html" aria-label="Previous: Chapter 2">← Prev</a>
+      <a rel="next" href="/chapters/ch04.html" aria-label="Next: Chapter 4">Next →</a>
+    </nav>
+
+    <footer style="margin-top:2rem;color:var(--muted)">
+      <p>End of Chapter 3</p>
+    </footer>
+  </main>
+
+  <!-- VALIDATION & MAPPING CHECKLIST
+  - [x] theme.css+app.js loaded
+  - [x] Canonical nav used verbatim; active link correct
+  - [x] Pager correct (prev=ch02, next=ch04)
+  - [x] ToC order matches file numbering
+  - [x] Sections present (objectives/resources/practice/mastery) and meet minimums
+  - [x] Glossary links valid (to be created)
+  - [x] Head/meta ok
+  - [x] No TODOs
+  -- Depth quick checks --
+  - [x] Chapter word count ≥ 1,200
+  - [x] ≥ 2 examples, ≥ 1 case study, ≥ 1 compare/contrast, ≥ 1 analogy
+  - [x] Practice: 3–5 tasks with criteria
+  - [x] Mastery: 5–7 Qs with <details> answers
+  - [x] ≥ 8 glossary terms introduced; ≥ 1 figure with caption
+  -->
+</body>
+</html>

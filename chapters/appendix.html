@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Appendix — Progression Map & Checklist</title>
+  <meta name="description" content="A concise reference appendix: progression map from beginner to advanced, top 10 pitfalls with fixes, review checklist, and planning guides." />
+  <meta property="og:title" content="Appendix — Progression Map & Checklist" />
+  <meta property="og:description" content="Pitfalls to avoid, what to review, and how to progress after finishing the beginner curriculum." />
+  <link rel="stylesheet" href="/styles/theme.css" />
+  <script defer src="/scripts/app.js"></script>
+</head>
+<body>
+  <!-- Canonical Navigation -->
+  <nav class="app-nav" aria-label="Primary">
+    <a href="/index.html">Home</a>
+    <a href="/chapters/ch01.html">Chapter 1</a>
+    <a href="/chapters/ch02.html">Chapter 2</a>
+    <a href="/chapters/ch03.html">Chapter 3</a>
+    <a href="/chapters/ch04.html">Chapter 4</a>
+    <a href="/chapters/ch05.html">Chapter 5</a>
+    <a href="/chapters/ch06.html">Chapter 6</a>
+    <a href="/chapters/ch07.html">Chapter 7</a>
+    <a href="/chapters/ch08.html">Chapter 8</a>
+    <a href="/chapters/appendix.html" aria-current="page">Appendix</a>
+    <a href="/chapters/glossary.html">Glossary</a>
+    <button class="nav-toggle" aria-label="Toggle menu" style="margin-left:auto">☰</button>
+  </nav>
+
+  <main>
+    <header class="page-hero">
+      <p class="badge" style="color:var(--muted);letter-spacing:.08em;">APPENDIX</p>
+      <h1>Progression Map &amp; Checklist</h1>
+      <p style="max-width:72ch;margin-top:.5rem">
+        Use this appendix as your after-care kit: a progression roadmap, a “top 10 pitfalls” cheat sheet with quick fixes, and review checklists.
+        Bookmark it and revisit before interviews or design docs.
+      </p>
+    </header>
+
+    <section aria-labelledby="progression">
+      <h2 id="progression">Progression Map</h2>
+      <figure>
+        <pre aria-label="Progression diagram">
+Beginner  ──► Vocabulary, mental models, small systems (TinyURL)
+               │  Focus: requirements → estimates → baseline → trade-offs
+               ▼
+Intermediate ─► Medium systems (chat, feeds, carts), sharding, queues, async
+               │  Focus: reliability, observability, cost, multi-region basics
+               ▼
+Advanced  ───► Global scale, consensus, formal SLAs/SLOs, performance engineering
+        </pre>
+        <figcaption>From accurate language and workflows → patterns and reliability → global scale and formalism.</figcaption>
+      </figure>
+      <div class="callout info">
+        <p><strong>Plan:</strong> For the next 6–8 weeks, pick two medium-scale systems (messaging and news feed). Design each twice: baseline, then 10× scale.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="pitfalls">
+      <h2 id="pitfalls">Top 10 Pitfalls (and Quick Fixes)</h2>
+      <ol class="resource-list">
+        <li><strong>Skipping requirements.</strong> <em>Fix:</em> Write 3–5 functional + 3 non-functional goals with numbers (p95, RPS, storage).</li>
+        <li><strong>Over-engineering early.</strong> <em>Fix:</em> Start with a monolith + DB; add cache/LB only after measuring.</li>
+        <li><strong>Confusing latency vs. throughput.</strong> <em>Fix:</em> Track both; optimize p95 and p99 for UX.</li>
+        <li><strong>Ignoring failures.</strong> <em>Fix:</em> Add one redundancy per critical component + a graceful degradation path.</li>
+        <li><strong>Premature sharding.</strong> <em>Fix:</em> Exhaust indexes and caching first; design shard key with access patterns.</li>
+        <li><strong>Sticky sessions everywhere.</strong> <em>Fix:</em> Externalize session state (JWT/Redis) to keep services <a href="/chapters/glossary.html#stateless">stateless</a>.</li>
+        <li><strong>Cache invalidation laziness.</strong> <em>Fix:</em> Choose TTL vs. explicit purge; document keys and who owns invalidation.</li>
+        <li><strong>Replica-induced staleness.</strong> <em>Fix:</em> “Read your writes” policy or bounded-staleness reads for writers.</li>
+        <li><strong>Sync analytics on the hot path.</strong> <em>Fix:</em> Emit to a <a href="/chapters/glossary.html#queue">queue</a>, batch process, display eventual counts.</li>
+        <li><strong>No observability.</strong> <em>Fix:</em> Define SLIs/SLOs, instrument tracing, and set alerts on user-facing symptoms.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="review">
+      <h2 id="review">Review Checklist (Before You Call a Design “Done”)</h2>
+      <ul class="resource-list">
+        <li>Requirements enumerated with numbers (p95, availability, data retention).</li>
+        <li>Back-of-the-envelope estimates (RPS, storage, cache hit goal) recorded.</li>
+        <li>Baseline architecture drawn (edge/CDN → LB → app → cache → DB).</li>
+        <li>Data model + indexes match top queries.</li>
+        <li>Failure modes listed; redundancy/failover noted.</li>
+        <li>Caching &amp; invalidation strategy chosen and documented.</li>
+        <li>Operational plan: monitoring metrics, alerts, dashboards, runbooks.</li>
+        <li>Security &amp; abuse considerations (rate limits, validation, privacy).</li>
+        <li>Clear trade-offs and non-goals explicitly stated.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="study-path">
+      <h2 id="study-path">From Beginner → Intermediate: A 4-Week Study Path</h2>
+      <ol class="resource-list">
+        <li><strong>Week 1:</strong> Re-do TinyURL with 10× traffic; add abuse controls; set SLOs and alerts.</li>
+        <li><strong>Week 2:</strong> Design a messaging app. Cover ordering, delivery, <a href="/chapters/glossary.html#eventual-consistency">eventual consistency</a>, and read replicas.</li>
+        <li><strong>Week 3:</strong> Design a news feed. Explore fanout, caching timelines, and ranking latency budgets.</li>
+        <li><strong>Week 4:</strong> Add a passive region + DNS failover to one design; practice incident response (runbook).</li>
+      </ol>
+      <div class="callout success"><strong>Output rule:</strong> Each week produces a 1–2 page design doc, one diagram, and a brief “trade-offs” section.</div>
+    </section>
+
+    <section aria-labelledby="templates">
+      <h2 id="templates">Reusable Templates</h2>
+      <h3>Design Doc Skeleton</h3>
+      <pre><code>1. Problem &amp; Requirements
+2. Non-Functional Goals &amp; SLOs
+3. Estimates (RPS, storage, cache hit)
+4. Architecture (components &amp; diagram)
+5. Data Model &amp; Indexes
+6. Read/Write Paths
+7. Reliability (redundancy, failover, backups)
+8. Caching &amp; Invalidation
+9. Security &amp; Abuse
+10. Observability (metrics, alerts, runbooks)
+11. Trade-offs &amp; Alternatives
+12. Risks &amp; Open Questions
+</code></pre>
+
+      <h3>Incident Runbook Skeleton</h3>
+      <pre><code>1. Symptoms (SLIs, dashboards)
+2. Probable Causes (by dependency)
+3. Immediate Actions (rate limit, circuit breakers)
+4. Verification Steps
+5. Rollback/Workarounds
+6. Communication (internal, status page)
+7. Postmortem Checklist
+</code></pre>
+    </section>
+
+    <section aria-labelledby="reading">
+      <h2 id="reading">Suggested Reading (Next Level)</h2>
+      <ul class="resource-list">
+        <li><em>Designing Data-Intensive Applications</em> (Kleppmann) — deep dives into storage, streams, and consistency.</li>
+        <li>Google SRE Book — reliability culture and practices.</li>
+        <li>System Design Primer — case studies to rehearse patterns and trade-offs.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="final-note">
+      <h2 id="final-note">Final Note</h2>
+      <p>
+        System design is a craft. Aim for clarity, measure impacts, and narrate trade-offs. Repetition builds fluency; incidents build intuition; 
+        reading builds breadth. Keep your notebook growing—designs improve faster than you think.
+      </p>
+    </section>
+
+    <nav class="next-prev" aria-label="Chapter pagination">
+      <a rel="prev" href="/chapters/ch08.html" aria-label="Previous: Chapter 8">← Prev</a>
+      <a rel="next" href="/chapters/glossary.html" aria-label="Next: Glossary">Next →</a>
+    </nav>
+
+    <footer style="margin-top:2rem;color:var(--muted)">
+      <p>End of Appendix</p>
+    </footer>
+  </main>
+
+  <!-- VALIDATION & MAPPING CHECKLIST
+  - [x] theme.css+app.js loaded
+  - [x] Canonical nav used verbatim; active link correct
+  - [x] Pager correct (prev=ch08, next=glossary)
+  - [x] ToC order matches file numbering
+  - [x] Appendix sections present: pitfalls, review, progression
+  - [x] Head/meta ok
+  - [x] No TODOs
+  -->
+</body>
+</html>
