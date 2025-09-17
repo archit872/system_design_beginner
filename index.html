@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>System Design (Beginner) — Book Builder</title>
+  <meta name="description" content="A beginner-friendly, practice-oriented system design curriculum: concepts, vocabulary, workflows, and a guided capstone." />
+  <meta property="og:title" content="System Design (Beginner) — Book Builder" />
+  <meta property="og:description" content="Understand, discuss, and start practicing core system design concepts through structured chapters, exercises, and a capstone." />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="/styles/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Ctext y='50' font-size='48'%3E🧩%3C/text%3E%3C/svg%3E">
+  <script defer src="/scripts/app.js"></script>
+</head>
+<body>
+  <!-- Canonical Navigation (copy verbatim to every page; app.js sets aria-current) -->
+  <nav class="app-nav" aria-label="Primary">
+    <a href="/index.html">Home</a>
+    <a href="/chapters/ch01.html">Chapter 1</a>
+    <a href="/chapters/ch02.html">Chapter 2</a>
+    <a href="/chapters/ch03.html">Chapter 3</a>
+    <a href="/chapters/ch04.html">Chapter 4</a>
+    <a href="/chapters/ch05.html">Chapter 5</a>
+    <a href="/chapters/ch06.html">Chapter 6</a>
+    <a href="/chapters/ch07.html">Chapter 7</a>
+    <a href="/chapters/ch08.html">Chapter 8</a>
+    <a href="/chapters/appendix.html">Appendix</a>
+    <a href="/chapters/glossary.html">Glossary</a>
+    <button class="nav-toggle" aria-label="Toggle menu" style="margin-left:auto">☰</button>
+  </nav>
+
+  <main>
+    <header class="page-hero">
+      <p class="badge" aria-label="Book level" style="color:var(--muted);letter-spacing:.08em;">BEGINNER · PRACTICE-ORIENTED</p>
+      <h1>System Design (Beginner)</h1>
+      <p style="max-width:70ch;margin-top:.5rem">
+        You’re a software engineer with basic programming experience looking to think beyond code and into systems. This book builds your foundation:
+        the **vocabulary** (API, latency, throughput), the **mental models** (scalability, reliability, maintainability), and the **workflows**
+        (requirements → architecture → trade-offs → iteration). Each chapter ends with practice and a mastery check; you’ll finish by designing a simple,
+        well-reasoned system end-to-end.
+      </p>
+    </header>
+
+    <section aria-labelledby="how-to-use">
+      <h2 id="how-to-use">How to use this book</h2>
+      <p>
+        The curriculum is designed for focused, incremental progress. Chapters 1–6 teach core ideas with concrete examples, short figures,
+        and compare/contrast callouts. Chapter 7 is a guided capstone where you apply the fundamentals to a small but realistic system
+        (e.g., URL shortener). Chapter 8 consolidates lessons and points you to intermediate study. An <a href="/chapters/appendix.html">Appendix</a> provides a progression map and pitfalls; the <a href="/chapters/glossary.html">Glossary</a> collects all bolded terms.
+      </p>
+      <ul class="resource-list">
+        <li><strong>Pacing:</strong> Expect ~6–10 hours total if you skim, ~14–20 hours if you complete all practice.</li>
+        <li><strong>Workflow:</strong> Read a section → sketch a diagram or example → do the practice → self-check with mastery.</li>
+        <li><strong>Artifacts to keep:</strong> a system design notebook with assumptions, diagrams, and trade-off notes.</li>
+        <li><strong>Focus:</strong> clarity over completeness. You’ll intentionally defer advanced topics (e.g., consensus algorithms) to later study.</li>
+      </ul>
+      <div class="callout info">
+        <p><strong>Tip:</strong> Use time-boxing. For each practice task, set a 20–30 minute timer to force prioritization and trade-offs—the heart of system design.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="toc">
+      <h2 id="toc">Table of Contents</h2>
+      <ol class="resource-list">
+        <li><a href="/chapters/ch01.html">Chapter 1 — Orientation: What is System Design?</a></li>
+        <li><a href="/chapters/ch02.html">Chapter 2 — Core Concepts: Clients, Servers &amp; Communication</a></li>
+        <li><a href="/chapters/ch03.html">Chapter 3 — Storage &amp; Databases Fundamentals</a></li>
+        <li><a href="/chapters/ch04.html">Chapter 4 — Caching &amp; Performance Basics</a></li>
+        <li><a href="/chapters/ch05.html">Chapter 5 — Scalability &amp; Load Handling</a></li>
+        <li><a href="/chapters/ch06.html">Chapter 6 — Reliability &amp; Fault Tolerance</a></li>
+        <li><a href="/chapters/ch07.html">Chapter 7 — Guided Practice: Designing a Simple System</a></li>
+        <li><a href="/chapters/ch08.html">Chapter 8 — Pitfalls, Review &amp; Next Steps</a></li>
+        <li><a href="/chapters/appendix.html">Appendix — Progression Map &amp; Checklist</a></li>
+        <li><a href="/chapters/glossary.html">Glossary — Vocabulary &amp; Definitions</a></li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="checklist">
+      <h2 id="checklist">Startup checklist</h2>
+      <ul class="resource-list">
+        <li>✅ Skim the <a href="/chapters/glossary.html">Glossary</a> to pre-load key terms you’ll encounter.</li>
+        <li>✅ Create a blank doc/notebook titled <em>“System Design Notebook”</em>.</li>
+        <li>✅ Install a diagramming tool (draw.io, Excalidraw, or simple pen & paper works).</li>
+        <li>✅ Choose your capstone target now (URL shortener, chat app, or tiny Twitter) to apply concepts as you go.</li>
+        <li>✅ Schedule two 60–90 minute sessions this week for practice and review.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="progression">
+      <h2 id="progression">Progression map</h2>
+      <figure role="img" aria-label="Beginner to Advanced progression">
+        <pre aria-hidden="true">
+[Beginner]
+  Concepts ──► Vocabulary ──► Small Designs (URL shortener)
+                     │
+                     ├─► Trade-offs & Patterns (cache, DB, LB)
+                     │
+[Intermediate]  Messaging, Feeds, Multi-region basics
+                     │
+                     └─► Resilience, Observability, Cost
+                                       │
+[Advanced]  Global scale, consensus, performance engineering
+        </pre>
+        <figcaption>From terms and mental models to end-to-end reasoning. Each stage adds fidelity (requirements, constraints, data, failure modes).</figcaption>
+      </figure>
+    </section>
+
+    <section aria-labelledby="credits">
+      <h2 id="credits">Recommended references</h2>
+      <ul class="resource-list">
+        <li><a href="https://github.com/donnemartin/system-design-primer" target="_blank" rel="noopener">System Design Primer (GitHub)</a> — wide survey, great jumping-off points.</li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" target="_blank" rel="noopener">MDN HTTP Overview</a> — definitive basics for the web’s lingua franca.</li>
+        <li><a href="https://redis.io/docs/latest/" target="_blank" rel="noopener">Redis Documentation</a> — fast in-memory data structures &amp; caching patterns.</li>
+        <li>(Optional, paid) Grokking the System Design Interview — structured interview-style problems.</li>
+      </ul>
+      <div class="callout warn">
+        <p><strong>Scope note:</strong> This book emphasizes correctness of reasoning over buzzwords. If you can justify choices with constraints and trade-offs, you’re doing real system design.</p>
+      </div>
+    </section>
+
+    <footer style="margin-top:4rem;color:var(--muted)">
+      <p>© 2025 Book Builder · Dark theme · Accessible and responsive</p>
+    </footer>
+  </main>
+
+  <!-- VALIDATION & MAPPING CHECKLIST
+  - [x] theme.css+app.js loaded
+  - [x] Canonical nav used verbatim (app.js sets active)
+  - [x] ToC order matches file numbering
+  - [x] Head/meta ok
+  - [x] LINK-MAP present
+  -->
+  <!--LINK-MAP: [
+    {"title":"Home","href":"/index.html"},
+    {"title":"Chapter 1","href":"/chapters/ch01.html"},
+    {"title":"Chapter 2","href":"/chapters/ch02.html"},
+    {"title":"Chapter 3","href":"/chapters/ch03.html"},
+    {"title":"Chapter 4","href":"/chapters/ch04.html"},
+    {"title":"Chapter 5","href":"/chapters/ch05.html"},
+    {"title":"Chapter 6","href":"/chapters/ch06.html"},
+    {"title":"Chapter 7","href":"/chapters/ch07.html"},
+    {"title":"Chapter 8","href":"/chapters/ch08.html"},
+    {"title":"Appendix","href":"/chapters/appendix.html"},
+    {"title":"Glossary","href":"/chapters/glossary.html"}
+  ]-->
+</body>
+</html>
